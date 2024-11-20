@@ -3,8 +3,8 @@
 #include <string.h>
 #include "sim.h"
 #include "process.h"
-
-#define MAX_PROCESSES 10
+#include "scheduling.h"
+#include "globals.h"
 
 int main(int argc, char *argv[]) {
 
@@ -41,6 +41,7 @@ int main(int argc, char *argv[]) {
         switch(choice){
             case 1:
                 /*Run FCFS*/
+                simulate_FCFS(processes, num_processes);
                 break;
             case 2:
                 /*Run SJF*/
