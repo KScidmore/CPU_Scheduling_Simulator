@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
         printf("2. SJF (Shortest Job First)\n");
         printf("3. RR (Round Robin)\n");
         printf("4. Priority Scheduling\n");
-        printf("Enter your choice (1-4): ");
+        printf("\nEnter your choice (1-4): ");
         scanf("%d", &choice);
 
         num_processes = process_input(processes);
@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
 int process_input(Process processes[]){
 
     int num;
-    printf("Enter the number of processes (max %d): ", MAX_PROCESSES);
+    printf("\nEnter the number of processes (max %d): ", MAX_PROCESSES);
     scanf("%d", &num);
 
     if(num < 1 || num > MAX_PROCESSES){
