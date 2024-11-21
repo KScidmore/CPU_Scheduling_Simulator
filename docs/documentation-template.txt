@@ -1,0 +1,88 @@
+/*-------- FOR C LANGUAGE FILES ----------------------------------------------/*
+
+
+/*---------- ID HEADER -------------------------------------
+/  Author(s):   TODO
+/  Email(s):    TODO
+/  File Name:   TODO
+/
+/  Program Description:
+/    TODO - a short, high-level overview of the program's purpose
+/    from the perspective of the user (what it does, not how it does it)
+/
+/  Program Details:
+/    Program Input:
+/      TODO - items required by the program, including data types 
+/      and limitations, and if it comes from the user or a file 
+/    
+/    Program Output:
+/      TODO - values, format, etc 
+/    
+/    Data Structures: 
+/      TODO - description of the major data structures used by the 
+/      program (if any)
+/    
+/    Misc:
+/      TODO
+/      - any formulae or calculations performed that are not obvious
+/      - any quirks caused by the assembly language implementation 
+/      - any assumptions (e.g. validity of user input) or limitations 
+/        (e.g. type and range of input values) 
+/
+/  Modification History:
+/    TODO - optional section; dated history which explains what has been 
+/    added or changed
+/
+/  Program Status:
+/    Not Yet Implemented:
+/      TODO
+/    
+/    Coded, Working, Tested:
+/      TODO 
+/    
+/    Coded, Untested:
+/      TODO 
+/    
+/    Not Working:
+/      TODO 
+/---------------------------------------------------------*/
+
+
+/*---------- FUNCTION: TODO --------------------------------
+/  Function Description:
+/    TODO - purpose, from the caller's perspective 
+/  
+/  Caller Input:
+/    TODO - the purpose of each input parameter
+/    or 
+/    N/A - No input parameters
+/  
+/  Caller Output:
+/    TODO - the purpose of each output parameter and return val 
+/    or 
+/    N/A - No output values
+/  
+/  Assumptions, Limitations, Known Bugs:
+/    TODO - any assumptions (e.g. validity of user input), 
+/    limitations (e.g. type and range of input values), or 
+/    known bugs 
+/
+/  Notes:
+/    TODO - if applicable, notes about the function (more
+/    when writing stuff for study material)
+/---------------------------------------------------------*/
+
+
+/*---------- STRUCTURE: TODO -------------------------------
+/  Structure Description:
+/    TODO - purpose, from the caller's perspective  
+/  
+/  Fields:
+/    TODO - description of each field (type and description)
+/  
+/  Relationships:
+/    TODO - description of any relationships with other structs 
+/    or objects, if applicable (e.g. is the struct to be used
+/    as a field of another struct, or does it contain other
+/    structs as one of its fields?)
+/---------------------------------------------------------*/

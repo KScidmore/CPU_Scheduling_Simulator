@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "process.h"
 #include "scheduling.h"
 #include "globals.h"
@@ -10,9 +11,8 @@
 
 void simulate_FCFS(Process processes[], int num_processes) {
 
-    Process ready_queue[MAX_PROCESSES];
-    Process completed_processes[MAX_PROCESSES];
-    int completed_index = 0;
+    Process ready_queue[num_processes];
+
     int current_time = 0;
     int idle_time = 0;
     int queue_size = 0;
@@ -42,19 +42,26 @@ void simulate_FCFS(Process processes[], int num_processes) {
 
         } else {
 
-            Process current_process = ready_queue[0];
+            Process *current_process = &ready_queue[0];
 
-            current_process.start_time = current_time;
-            printf("%d\tStarted P%s\t", current_time, current_process.id);
+            current_process->start_time = current_time;
+            printf("%d\tStarted P%s\t", current_time, current_process->id);
             display_queue(ready_queue, queue_size);
             printf("\n");
 
             /*Update current time and current processes metrics*/
-            current_time += current_process.burst_time;
-            current_process.completion_time = current_time;
-            current_process.turnaround_time = current_process.completion_time - current_process.arrival_time;
-            current_process.waiting_time = current_process.turnaround_time - current_process.burst_time;
-            current_process.response_time = current_process.start_time - current_process.arrival_time;
+            current_time += current_process->burst_time;
+
+            for(int j = 0; j < num_processes; j++){
+
+                if(strcmp(processes[j].id, current_process->id) == 0){
+                    processes[j].completion_time = current_time;
+                    processes[j].turnaround_time = current_time - processes[j].arrival_time;
+                    processes[j].waiting_time = processes[j].turnaround_time - processes[j].burst_time;
+                    processes[j].response_time = current_process->start_time - processes[j].arrival_time;
+                    break;
+                }
+            }
 
             /*Shift processes in ready queue*/
             for (int j = 1; j < queue_size; j++) {
@@ -68,12 +75,9 @@ void simulate_FCFS(Process processes[], int num_processes) {
                 i++;
             }
 
-            printf("%d\tCompleted P%s\t", current_time, current_process.id);
+            printf("%d\tCompleted P%s\t", current_time, current_process->id);
             display_queue(ready_queue, queue_size);
             printf("\n");
-
-            /*Add current process to final array of completed processes*/
-            completed_processes[completed_index++] = current_process;
 
         }
     }
@@ -81,7 +85,7 @@ void simulate_FCFS(Process processes[], int num_processes) {
     printf("---------------------------------------\n");
     printf("Simulation complete.\n\n");
 
-    display_metrics(completed_processes, num_processes, idle_time, current_time);
+    display_metrics(processes, num_processes, idle_time, current_time);
 
 }
 

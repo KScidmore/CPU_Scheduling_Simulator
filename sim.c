@@ -32,11 +32,6 @@ int main(int argc, char *argv[]) {
 
         num_processes = process_input(processes);
 
-        /*for (int i = 0; i < num_processes; i++) {
-        printf("Process ID: %s\n", processes[i].id);
-        printf("Arrival Time: %d\n", processes[i].arrival_time);
-        printf("Burst Time: %d\n", processes[i].burst_time);*/
-
 
         switch(choice){
             case 1:
