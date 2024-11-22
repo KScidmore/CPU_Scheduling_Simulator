@@ -85,8 +85,6 @@ void simulate_FCFS(Process processes[], int num_processes) {
 
 
 
-
-
 void display_metrics(Process processes[], int num_processes, int idle_time, int current_time){
 
     int total_waiting = 0;

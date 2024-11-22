@@ -67,15 +67,15 @@ Process dequeue(CircularQueue *queue) {
 }
 
 void display_queue(CircularQueue *queue) {
+    printf("[");
     if (!isEmpty(queue)) {
-        printf("[");
         for (int i = 0; i < queue->fill; i++) {
             int index = (queue->front + i) % MAX_PROCESSES;
             printf("%s", queue->data[index].id);
             if (i < queue->fill - 1) printf(", ");
         }
-        printf("]");
     }
+    printf("]");
 }
 
 /*---------- Helper Functions Not Used Outside Module ------------------------*/

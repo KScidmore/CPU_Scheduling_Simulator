@@ -17,19 +17,18 @@ Enter Process Details 4
 Process ID: Arrival Time: Burst Time: 
 Enter Process Details 5
 Process ID: Arrival Time: Burst Time: 
-
-Time	Event			Ready Queue
+Time	Event		Ready Queue
 ---------------------------------------
-0		Started P1		[2, 3, 4, 5]
-2		Completed P1	[2, 3, 4, 5]
-2		Started P2		[3, 4, 5]
-8		Completed P2	[3, 4, 5]
-8		Started P3		[4, 5]
-16		Completed P3	[4, 5]
-16		Started P4		[5]
-19		Completed P4	[5]
-19		Started P5		[]
-24		Completed P5	[]
+0	Started P1	[P1, P2, P3, P4, P5]
+2	Completed P2	[P2, P3, P4, P5]
+2	Started P2	[P2, P3, P4, P5]
+8	Completed P3	[P3, P4, P5]
+8	Started P3	[P3, P4, P5]
+16	Completed P4	[P4, P5]
+16	Started P4	[P4, P5]
+19	Completed P5	[P5]
+19	Started P5	[P5]
+24	Completed P5	[]
 ---------------------------------------
 Simulation complete.
 
