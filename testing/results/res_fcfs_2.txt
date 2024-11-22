@@ -1,0 +1,46 @@
+
+Select a Scheduling Algorithm:
+1. FCFS (First Come First Serve)
+2. SJF (Shortest Job First)
+3. RR (Round Robin)
+4. Priority Scheduling
+
+Enter your choice (1-4): 
+Enter the number of processes (max 10): 
+Enter Process Details 1
+Process ID: Arrival Time: Burst Time: 
+Enter Process Details 2
+Process ID: Arrival Time: Burst Time: 
+Enter Process Details 3
+Process ID: Arrival Time: Burst Time: 
+Enter Process Details 4
+Process ID: Arrival Time: Burst Time: 
+Enter Process Details 5
+Process ID: Arrival Time: Burst Time: 
+
+Time	Event			Ready Queue
+---------------------------------------
+0		Started P1		[2, 3, 4, 5]
+2		Completed P1	[2, 3, 4, 5]
+2		Started P2		[3, 4, 5]
+8		Completed P2	[3, 4, 5]
+8		Started P3		[4, 5]
+16		Completed P3	[4, 5]
+16		Started P4		[5]
+19		Completed P4	[5]
+19		Started P5		
+24		Completed P5	
+---------------------------------------
+Simulation complete.
+
+Metrics for P1: Turnaround= 2, Waiting= 0, Response= 0
+Metrics for P2: Turnaround= 8, Waiting= 2, Response= 2
+Metrics for P3: Turnaround= 16, Waiting= 8, Response= 8
+Metrics for P4: Turnaround= 19, Waiting= 16, Response= 16
+Metrics for P5: Turnaround= 24, Waiting= 19, Response= 19
+
+Metrics Summary:
+Average Waiting Time: 9.00
+Average Turnaround Time: 13.80
+Throughput: 0.21 processes per time unit
+CPU Utilization: 100.00%

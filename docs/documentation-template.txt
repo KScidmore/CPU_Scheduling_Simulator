@@ -2,8 +2,8 @@
 
 
 /*---------- ID HEADER -------------------------------------
-/  Author(s):   TODO
-/  Email(s):    TODO
+/  Author(s):   Andrew Boisvert, Kyle Scidmore
+/  Email(s):    abois526@mtroyal.ca, kscid125@mtroyal.ca 
 /  File Name:   TODO
 /
 /  Program Description:
@@ -28,23 +28,6 @@
 /      - any quirks caused by the assembly language implementation 
 /      - any assumptions (e.g. validity of user input) or limitations 
 /        (e.g. type and range of input values) 
-/
-/  Modification History:
-/    TODO - optional section; dated history which explains what has been 
-/    added or changed
-/
-/  Program Status:
-/    Not Yet Implemented:
-/      TODO
-/    
-/    Coded, Working, Tested:
-/      TODO 
-/    
-/    Coded, Untested:
-/      TODO 
-/    
-/    Not Working:
-/      TODO 
 /---------------------------------------------------------*/
 
 
