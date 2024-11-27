@@ -167,6 +167,81 @@ void simulate_SJF(Process processes[], int num_processes) {
     display_chart(processes, num_processes);
 }
 
+void simulate_priority(Process processes[], int num_processes) {
+
+    CircularQueue ready_queue;
+    init_queue(&ready_queue);
+
+    int current_time = 0;
+    int idle_time = 0;
+    int start_time;
+
+    printf("\nRunning Simulation for Priority Scheduling\n\n");
+    qsort(processes, num_processes, sizeof(Process), compare_arrival);
+
+    printf("\n\nTime\tEvent\t\tReady Queue\n");
+    printf("---------------------------------------\n");
+
+    int i = 0;
+    while (i < num_processes || !isEmpty(&ready_queue)) {
+
+        while (i < num_processes && processes[i].arrival_time <= current_time) {
+            enqueue(&ready_queue, processes[i]);
+            i++;
+        }
+
+        if (isEmpty(&ready_queue)) {
+
+            printf("%d\tIdle\t\t", current_time);
+            display_queue(&ready_queue);
+            printf("\n");
+            current_time++;
+            idle_time++;
+        } else {
+
+            sort_queue(&ready_queue, compare_priority);
+
+            Process current_process = ready_queue.data[ready_queue.front];
+
+            start_time = current_time;
+            printf("%d\tStarted P%s\t", current_time, current_process.id);
+            display_queue(&ready_queue);
+            printf("\n");
+            dequeue(&ready_queue);
+            current_time += current_process.burst_time;
+
+            for (int j = 0; j < num_processes; j++) {
+                if (strcmp(processes[j].id, current_process.id) == 0) {
+                    processes[j].completion_time = current_time;
+                    processes[j].turnaround_time = current_time - processes[j].arrival_time;
+                    processes[j].waiting_time = processes[j].turnaround_time - processes[j].burst_time;
+                    processes[j].response_time = start_time - processes[j].arrival_time;
+                    processes[j].start_time = start_time;
+                    break;
+                }
+            }
+
+            while (i < num_processes && processes[i].arrival_time <= current_time) {
+                enqueue(&ready_queue, processes[i]);
+                i++;
+            }
+
+            printf("%d\tCompleted P%s\t", current_time, current_process.id);
+            display_queue(&ready_queue);
+            printf("\n");
+        }
+    }
+
+    printf("---------------------------------------\n");
+    printf("Simulation complete.\n\n");
+
+    qsort(processes, num_processes, sizeof(Process), compare_completion);
+
+    display_metrics(processes, num_processes, idle_time, current_time);
+
+    display_chart(processes, num_processes);
+}
+
 void sort_queue(CircularQueue *queue, int (*compare)(const void *, const void *)) {
     if (queue->fill <= 1) return; 
 
@@ -283,19 +358,31 @@ int compare_arrival(const void *a, const void *b) {
 }
 
 int compare_burst(const void *a, const void *b) {
-    Process *p1 = (Process *)a;
-    Process *p2 = (Process *)b;
+    Process *process_a = (Process *)a;
+    Process *process_b = (Process *)b;
 
-    if (p1->burst_time != p2->burst_time) {
-        return p1->burst_time - p2->burst_time;
+    if (process_a->burst_time != process_b->burst_time) {
+        return process_a->burst_time - process_b->burst_time;
     }
 
     /*If Burst times equal compare by arrival*/
-    return p1->arrival_time - p2->arrival_time;
+    return process_a->arrival_time - process_b->arrival_time;
 }
 
 int compare_completion(const void *a, const void *b) {
-    Process *p1 = (Process *)a;
-    Process *p2 = (Process *)b;
-    return p1->completion_time - p2->completion_time;
+    Process *process_a = (Process *)a;
+    Process *process_b = (Process *)b;
+    return process_a->completion_time - process_b->completion_time;
+}
+
+int compare_priority(const void *a, const void *b) {
+    Process *process_a = (Process *)a;
+    Process *process_b = (Process *)b;
+
+    if (process_a->priority != process_b->priority) {
+        return process_a->priority - process_b->priority;
+    }
+
+    /*If priority equal compare by arrival*/
+    return process_a->arrival_time - process_b->arrival_time;
 }

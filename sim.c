@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
         printf("\nEnter your choice (1-4): ");
         scanf("%d", &choice);
 
-        num_processes = process_input(processes);
+        num_processes = process_input(processes, choice);
 
 
         switch(choice){
@@ -49,6 +49,7 @@ int main(int argc, char *argv[]) {
                 break;
             case 4:
                 /*Run Priority*/
+                simulate_priority(processes, num_processes);
                 break;
             default:
                 printf("Invalid Choice\n");
@@ -59,8 +60,9 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-int process_input(Process processes[]){
+int process_input(Process processes[], int choice){
 
+    printf("%d", choice);
     int num;
     printf("\nEnter the number of processes (max %d): ", MAX_PROCESSES);
     scanf("%d", &num);
@@ -79,6 +81,11 @@ int process_input(Process processes[]){
         scanf("%d", &processes[i].arrival_time);
         printf("Burst Time: ");
         scanf("%d", &processes[i].burst_time);
+
+        if(choice == 4){
+            printf("Priority: ");
+            scanf("%d", &processes[i].priority);
+        }
 
         /*Set up other default values*/
         processes[i].remaining_time = processes[i].burst_time;

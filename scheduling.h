@@ -12,4 +12,7 @@ int compare_burst(const void *a, const void *b);
 void sort_queue(CircularQueue *queue, int (*compare)(const void *, const void *));
 int compare_completion(const void *a, const void *b);
 void display_chart(Process processes[], int num_processes);
+
+int compare_priority(const void *a, const void *b);
+void simulate_priority(Process processes[], int num_processes);
 #endif
