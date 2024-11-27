@@ -71,12 +71,13 @@ void display_queue(CircularQueue *queue) {
     if (!isEmpty(queue)) {
         for (int i = 0; i < queue->fill; i++) {
             int index = (queue->front + i) % MAX_PROCESSES;
-            printf("%s", queue->data[index].id);
+            printf("P%s", queue->data[index].id); // Add "P" before the process ID
             if (i < queue->fill - 1) printf(", ");
         }
     }
     printf("]");
 }
+
 
 /*---------- Helper Functions Not Used Outside Module ------------------------*/
 

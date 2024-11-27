@@ -40,6 +40,7 @@ int main(int argc, char *argv[]) {
                 break;
             case 2:
                 /*Run SJF*/
+                simulate_SJF(processes, num_processes);
                 break;
             case 3:
                 /*Ask for time quantum and run RR*/
