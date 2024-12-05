@@ -46,6 +46,7 @@ int main(int argc, char *argv[]) {
                 /*Ask for time quantum and run RR*/
                 printf("Enter Time Quantum: ");
                 scanf("%d", &time_quantum);
+                simulate_round_robin(processes, num_processes, time_quantum);
                 break;
             case 4:
                 /*Run Priority*/
@@ -94,6 +95,7 @@ int process_input(Process processes[], int choice){
         processes[i].turnaround_time = 0;
         processes[i].waiting_time = 0;
         processes[i].response_time = -1;
+        processes[i].has_started = 0;
 
     }
 
