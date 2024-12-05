@@ -9,33 +9,43 @@
 #-----------------------------------------------------------
 
 #--------- Variable declarations ---------------------------
-# Targets and objects
-TARGET=sim
-OBJECTS=sim.o scheduling.o
+# executable and object files 
+EXE=sim
+OBJECTS=sim.o scheduling.o circular_queue.o
 
-# CC stuff
-CC=gcc
-CFLAGS=-g
+# C compiler stuff
+CC=gcc		# C compiler program
+CFLAGS=-g	# flags for the C compiler 
 
 
 #--------- Building, Linking, Cleaning ---------------------
-# Building the target
-all: clean $(TARGET)
+# default target for conditional recompilation
+default: $(EXE)
+
+# target for full rebuild 
+all: clean $(EXE)
 
 # Linking target executable from object files
-$(TARGET): $(OBJECTS)
-	$(CC) $(OBJECTS) -o $(TARGET)
+$(EXE): $(OBJECTS)
+	$(CC) $(OBJECTS) -o $(EXE)
 
 # Cleaning up the old object files and executable
 clean:
-	rm -f *.o $(TARGET)
+	rm -f *.o $(EXE) circ 
+
+# temp target 
+circ: circular_queue.o
+	$(CC) circular_queue.o -o circ
 
 
 #--------- Creating Object Files --------------------------- 
-sim.o: sim.c sim.h globals.h process.h
+sim.o: sim.c sim.h globals.h process.h options.h
 	$(CC) $(CFLAGS) -c sim.c 
 
-scheduling.o: scheduling.c scheduling.h globals.h process.h
+scheduling.o: scheduling.c scheduling.h globals.h process.h circular_queue.h options.h
 	$(CC) $(CFLAGS) -c scheduling.c 
+
+circular_queue.o: circular_queue.h globals.h process.h 
+	$(CC) $(CFLAGS) -c circular_queue.c 
 
 # The empty line above this comment must remain to avoid errors

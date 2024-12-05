@@ -3,5 +3,5 @@
 
 #include "process.h"
 
-int process_input(Process processes[]);
+int process_input(Process processes[], int choice);
 #endif
