@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "sim.h"
 #include "process.h"
 #include "scheduling.h"
@@ -14,7 +15,7 @@ void print_help();
 int process_file_input(Process processes[], Options *options);
 void run_cli_mode(int argc, char **argv, Process processes[], Options *options);
 void run_interactive_mode(Process processes[], Options *options);
-void run_selected_algorithm(Process processes[], int num_processes, Options *options);
+void run_selected_algorithm(Process processes[], int num_processes, Options *options, FILE *fp);
 void print_scheduling_menu();
 
 
@@ -38,20 +39,30 @@ void run_cli_mode(int argc, char **argv, Process processes[], Options *options) 
     int num_processes = 0;
     int choice = 0;
 
+    FILE *input = stdin;
+    FILE *output = stdout;
+
     parse_cli_args(argc, argv, options);
 
     if (options->input_file[0] != '\0') {
+        input = fopen(options->input_file, "r");
+        num_processes = process_file_input(processes, options);
+    } else if (!isatty(fileno(stdin))) {
         num_processes = process_file_input(processes, options);
     } else {
         // get interactively if null 
         num_processes = process_input(processes, choice);
     }
 
-
+    if (options->output_file[0] != '\0') {
+        output = fopen(options->output_file, "w");
+    }
 
     if (options->alg_selection[0] == '\0') {
-        print_scheduling_menu();
-        scanf("%d", &choice);
+        if (isatty(fileno(stdin))) {
+            print_scheduling_menu();
+            scanf("%d", &choice);
+        }
         switch (choice) {
             case 1: strcpy(options->alg_selection, "fcfs"); break;
             case 2: strcpy(options->alg_selection, "sjf"); break;
@@ -61,13 +72,15 @@ void run_cli_mode(int argc, char **argv, Process processes[], Options *options) 
         }
     } 
 
-    run_selected_algorithm(processes, num_processes, options);
+    run_selected_algorithm(processes, num_processes, options, output);
 }
 
 
 void run_interactive_mode(Process processes[], Options *options) {
     int choice;
     int num_processes;
+
+    FILE *output = stdout;
 
     print_scheduling_menu();
     scanf("%d", &choice);
@@ -82,39 +95,27 @@ void run_interactive_mode(Process processes[], Options *options) {
 
     num_processes = process_input(processes, choice);
 
-    run_selected_algorithm(processes, num_processes, options);
+    run_selected_algorithm(processes, num_processes, options, output);
 }
 
 void print_scheduling_menu() {
-    printf("\nSelect a Scheduling Algorithm:\n");
-    printf("1. FCFS (First Come First Serve)\n");
-    printf("2. SJF (Shortest Job First)\n");
-    printf("3. RR (Round Robin)\n");
-    printf("4. Priority Scheduling\n");
-    printf("\nEnter your choice (1-4): ");
+    fprintf(stderr, "\nSelect a Scheduling Algorithm:\n");
+    fprintf(stderr, "1. FCFS (First Come First Serve)\n");
+    fprintf(stderr, "2. SJF (Shortest Job First)\n");
+    fprintf(stderr, "3. RR (Round Robin)\n");
+    fprintf(stderr, "4. Priority Scheduling\n");
+    fprintf(stderr, "\nEnter your choice (1-4): ");
 }
 
-void run_selected_algorithm(Process processes[], int num_processes, Options *options) {
+void run_selected_algorithm(Process processes[], int num_processes, Options *options, FILE *fp) {
     if (strcmp(options->alg_selection, "fcfs") == 0) {
-        if (options->output_file[0] == '\0') {
-            simulate_FCFS_to_stdout(processes, num_processes);
-        } else {
-            simulate_FCFS_to_file(processes, num_processes, options);
-        }
+        simulate_FCFS(processes, num_processes, options, fp);
     } else if (strcmp(options->alg_selection, "sjf") == 0) {
-        if (options->output_file[0] == '\0') {
-            simulate_SJF_to_stdout(processes, num_processes);
-        } else {
-            simulate_SJF_to_file(processes, num_processes, options);
-        }
+        simulate_SJF(processes, num_processes, options, fp);
     } else if (strcmp(options->alg_selection, "rr") == 0) {
         /* TODO */
     } else if (strcmp(options->alg_selection, "priority") == 0) {
-        if (options->output_file[0] == '\0') {
-            simulate_priority_to_stdout(processes, num_processes);
-        } else {
-            simulate_priority_to_file(processes, num_processes, options);
-        }
+        simulate_priority(processes, num_processes, options, fp);
     } else {
         printf("Invalid choice.\n");
     }
@@ -202,6 +203,7 @@ int parse_cli_args(int argc, char **argv, Options *options) {
     return 0;
 }
 
+
 void print_help() {
     printf("NAME\n\tsim - simulate process scheduling algorithms\n\n");
     printf("SYNOPSIS\n\t./sim [-i filename] [-o filename] [-h | --help]\n\n");
@@ -217,17 +219,18 @@ void print_help() {
     printf("\t-h, --help\n\t\tPrint detailed help info about the program.\n\n");
 }
 
+
 int process_file_input(Process processes[], Options *options) {
-    FILE *input = fopen(options->input_file, "r");
-    if (input == NULL) {
-        fprintf(stderr, "Error: input file not created.\n");
-        return -1;
+
+    FILE *input = stdin;
+    if (options->input_file[0] != '\0') {
+        input = fopen(options->input_file, "r");
     }
 
     int i = 0;
 
     //populates line and checks if it exists 
-    while (fscanf(input, "%s %d %d", processes[i].id, &processes[i].arrival_time, &processes[i].burst_time) == 3 && i <= MAX_PROCESSES) {
+    while (fscanf(input, "%s %d %d", processes[i].id, &processes[i].arrival_time, &     processes[i].burst_time) == 3 && i <= MAX_PROCESSES) {
         processes[i].priority = -1;           
         processes[i].remaining_time = -1;
         processes[i].start_time = -1;         
@@ -239,6 +242,8 @@ int process_file_input(Process processes[], Options *options) {
         i++;
     }
 
-    fclose(input);
+    if (input != stdin) {
+        fclose(input);
+    }
     return i;
 }

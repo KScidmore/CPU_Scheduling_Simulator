@@ -1,0 +1,24 @@
+./sim -a fcfs
+./sim -a fcfs -i testing/cli_input/fcfs_1.txt
+./sim -a fcfs -o testing/cli_output/fcfs_1.txt 
+
+./sim -a fcfs -i testing/cli_input/fcfs_1.txt
+./sim -a fcfs -i input.txt -o output.txt
+./sim -a fcfs -i input.txt > output.txt
+./sim -a fcfs < input.txt 
+
+
+Currently, these work
+-----
+./sim
+./sim < testing/menu_input/fcfs_1.txt
+./sim -i testing/cli_input/fcfs_1.txt
+./sim < testing/menu_input/fcfs_1.txt > testoutput.txt
+
+
+These do not
+------
+./sim > output.txt
+./sim -i testing/cli_input/fcfs_1.txt -o testing/cli_output/fcfs_1.txt 
+./sim -o testing/cli_output/fcfs_1.txt 
+./sim -i testing/cli_input/fcfs_1.txt -o testoutput.txt
