@@ -619,3 +619,304 @@ int compare_priority(const void *a, const void *b) {
     /*If priority equal compare by arrival*/
     return process_a->arrival_time - process_b->arrival_time;
 }
+
+void simulate_SRTF(Process processes[], int num_processes, float alpha, int default_burst) {
+
+    CircularQueue ready_queue;
+    init_queue(&ready_queue);
+
+    int current_time = 0;
+    int idle_time = 0;
+    int start_time;
+    int preempted = 0;
+    char last_process_id[10] = "";
+
+    // Initialize predicted burst times
+    for (int j = 0; j < num_processes; j++) {
+        processes[j].predicted_burst = default_burst;
+    }
+
+    // Sort processes by arrival time
+    qsort(processes, num_processes, sizeof(Process), compare_arrival);
+
+    printf("\nRunning Simulation for Preemptive SJF (Shortest Job First, with Predictions)\n\n");
+    printf("\n\nTime\tEvent\t\tReady Queue\n");
+    printf("---------------------------------------\n");
+
+    int i = 0;
+    while (i < num_processes || !isEmpty(&ready_queue)) {
+        // Add processes that have arrived
+        while (i < num_processes && processes[i].arrival_time <= current_time) {
+            enqueue(&ready_queue, processes[i]);
+            i++;
+        }
+
+        if (isEmpty(&ready_queue)) {
+            printf("%d\tIdle\t\t", current_time);
+            display_queue(&ready_queue);
+            printf("\n");
+            current_time++;
+            idle_time++;
+        } else {
+            
+            sort_queue(&ready_queue, compare_predicted_burst);
+
+            Process *current_process = &ready_queue.data[ready_queue.front];
+
+            if (strcmp(current_process->id, last_process_id) != 0) {
+                preempted = 1;
+            }
+
+
+            if (current_process->remaining_time == current_process->burst_time) {
+                current_process->start_time = current_time;
+            }
+
+            printf("%d\tStarted P%s\t", current_time, current_process->id);
+            display_queue(&ready_queue);
+            printf("\n");
+
+        
+            current_process->remaining_time--;
+            current_time++;
+
+            
+            if (current_process->remaining_time == 0) {
+                dequeue(&ready_queue);
+                printf("%d\tCompleted P%s\t", current_time, current_process->id);
+                display_queue(&ready_queue);
+                printf("\n");
+
+                
+                for (int j = 0; j < num_processes; j++) {
+                    if (strcmp(processes[j].id, current_process->id) == 0) {
+                        processes[j].completion_time = current_time;
+                        processes[j].turnaround_time = current_time - processes[j].arrival_time;
+                        processes[j].waiting_time = processes[j].turnaround_time - processes[j].burst_time;
+                        processes[j].response_time = start_time - processes[j].arrival_time;
+                        break;
+                    }
+                }
+            }
+
+    
+            if (preempted) {
+
+                Process *previous_process = NULL;
+                for (int j = 0; j < ready_queue.fill; j++) {
+                    if (strcmp(ready_queue.data[j].id, last_process_id) == 0) {
+                        previous_process = &ready_queue.data[j];
+                        break;
+                    }
+                }
+
+                if (previous_process) {
+                    float execution_time = previous_process->burst_time - previous_process->remaining_time;
+                    previous_process->predicted_burst = 
+                        alpha * execution_time + (1 - alpha) * previous_process->predicted_burst;
+                }
+
+                preempted = 0;
+            }
+
+            strncpy(last_process_id, current_process->id, sizeof(last_process_id));
+
+        
+            while (i < num_processes && processes[i].arrival_time <= current_time) {
+                enqueue(&ready_queue, processes[i]);
+                i++;
+            }
+        }
+    }
+
+    printf("---------------------------------------\n");
+    printf("Simulation complete.\n\n");
+
+    qsort(processes, num_processes, sizeof(Process), compare_completion);
+    display_metrics(processes, num_processes, idle_time, current_time);
+    display_chart(processes, num_processes);
+}
+
+
+
+void simulate_preemptive_priority(Process processes[], int num_processes) {
+
+    CircularQueue ready_queue;
+    init_queue(&ready_queue);
+
+    int current_time = 0;
+    int idle_time = 0;
+    int start_time;
+
+    qsort(processes, num_processes, sizeof(Process), compare_arrival);
+
+    printf("\nRunning Simulation for Preemptive SJF (Shortest Job First, with Predictions)\n\n");
+    printf("\n\nTime\tEvent\t\tReady Queue\n");
+    printf("---------------------------------------\n");
+
+    int i = 0;
+    while (i < num_processes || !isEmpty(&ready_queue)) {
+    
+        while (i < num_processes && processes[i].arrival_time <= current_time) {
+            enqueue(&ready_queue, processes[i]);
+            i++;
+        }
+
+        if (isEmpty(&ready_queue)) {
+            printf("%d\tIdle\t\t", current_time);
+            display_queue(&ready_queue);
+            printf("\n");
+            current_time++;
+            idle_time++;
+        } else {
+            
+            sort_queue(&ready_queue, compare_priority);
+
+            Process *current_process = &ready_queue.data[ready_queue.front];
+
+
+            if (current_process->remaining_time == current_process->burst_time) {
+                current_process->start_time = current_time;
+            }
+
+            printf("%d\tStarted P%s\t", current_time, current_process->id);
+            display_queue(&ready_queue);
+            printf("\n");
+
+        
+            current_process->remaining_time--;
+            current_time++;
+
+            
+            if (current_process->remaining_time == 0) {
+                dequeue(&ready_queue);
+                printf("%d\tCompleted P%s\t", current_time, current_process->id);
+                display_queue(&ready_queue);
+                printf("\n");
+
+                
+                for (int j = 0; j < num_processes; j++) {
+                    if (strcmp(processes[j].id, current_process->id) == 0) {
+                        processes[j].completion_time = current_time;
+                        processes[j].turnaround_time = current_time - processes[j].arrival_time;
+                        processes[j].waiting_time = processes[j].turnaround_time - processes[j].burst_time;
+                        processes[j].response_time = start_time - processes[j].arrival_time;
+                        break;
+                    }
+                }
+            }
+       
+            while (i < num_processes && processes[i].arrival_time <= current_time) {
+                enqueue(&ready_queue, processes[i]);
+                i++;
+            }
+        }
+    }
+
+    printf("---------------------------------------\n");
+    printf("Simulation complete.\n\n");
+
+    qsort(processes, num_processes, sizeof(Process), compare_completion);
+    display_metrics(processes, num_processes, idle_time, current_time);
+    display_chart(processes, num_processes);
+}
+
+void simulate_round_robin(Process processes[], int num_processes, int time_quantum) {
+
+    CircularQueue ready_queue;
+    init_queue(&ready_queue);
+
+    int current_time = 0;
+    int idle_time = 0;
+    int i = 0;
+
+    printf("\nRunning Simulation for Round Robin Scheduling\n\n");
+    qsort(processes, num_processes, sizeof(Process), compare_arrival); 
+
+    printf("\n\nTime\tEvent\t\tReady Queue\n");
+    printf("---------------------------------------\n");
+
+    while (i < num_processes || !isEmpty(&ready_queue)) {
+
+        
+        while (i < num_processes && processes[i].arrival_time <= current_time) {
+            enqueue(&ready_queue, processes[i]);
+            i++;
+        }
+
+        if (isEmpty(&ready_queue)) {
+            
+            printf("%d\tIdle\t\t", current_time);
+            display_queue(&ready_queue);
+            printf("\n");
+            current_time++;
+            idle_time++;
+        } else {
+            
+            Process current_process = ready_queue.data[ready_queue.front];
+
+            
+            for (int j = 0; j < num_processes; j++) {
+                if (strcmp(processes[j].id, current_process.id) == 0 && !processes[j].has_started) {
+                    processes[j].response_time = current_time - processes[j].arrival_time;
+                    processes[j].start_time = current_time;
+                    processes[j].has_started = 1;
+                    break;
+                }
+            }
+
+            
+            int exec_time = (current_process.remaining_time > time_quantum) ? time_quantum : current_process.remaining_time;
+            printf("%d\tRunning P%s\t", current_time, current_process.id);
+            display_queue(&ready_queue);
+            printf("\n");
+            dequeue(&ready_queue);
+
+            current_time += exec_time;
+            current_process.remaining_time -= exec_time;
+
+            
+            while (i < num_processes && processes[i].arrival_time <= current_time) {
+                enqueue(&ready_queue, processes[i]);
+                i++;
+            }
+
+            
+            if (current_process.remaining_time > 0) {
+                enqueue(&ready_queue, current_process); 
+            } else {
+                
+                for (int j = 0; j < num_processes; j++) {
+                    if (strcmp(processes[j].id, current_process.id) == 0) {
+                        processes[j].completion_time = current_time;
+                        processes[j].turnaround_time = current_time - processes[j].arrival_time;
+                        processes[j].waiting_time = processes[j].turnaround_time - processes[j].burst_time;
+                        break;
+                    }
+                }
+                printf("%d\tCompleted P%s\t", current_time, current_process.id);
+                display_queue(&ready_queue);
+                printf("\n");
+            }
+        }
+    }
+
+    printf("---------------------------------------\n");
+    printf("Simulation complete.\n\n");
+
+
+    display_metrics(processes, num_processes, idle_time, current_time);
+    display_chart(processes, num_processes);
+}
+
+int compare_predicted_burst(const void *a, const void *b) {
+    Process *process_a = (Process *)a;
+    Process *process_b = (Process *)b;
+
+    if (process_a->predicted_burst != process_b->predicted_burst) {
+        return process_a->predicted_burst - process_b->predicted_burst;
+    }
+
+    /*If Burst times equal compare by arrival*/
+    return process_a->arrival_time - process_b->arrival_time;
+}
