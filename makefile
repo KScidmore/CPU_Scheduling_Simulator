@@ -39,10 +39,10 @@ circ: circular_queue.o
 
 
 #--------- Creating Object Files --------------------------- 
-sim.o: sim.c sim.h globals.h process.h
+sim.o: sim.c sim.h globals.h process.h options.h
 	$(CC) $(CFLAGS) -c sim.c 
 
-scheduling.o: scheduling.c scheduling.h globals.h process.h circular_queue.h
+scheduling.o: scheduling.c scheduling.h globals.h process.h circular_queue.h options.h
 	$(CC) $(CFLAGS) -c scheduling.c 
 
 circular_queue.o: circular_queue.h globals.h process.h 
