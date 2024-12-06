@@ -37,12 +37,19 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options, FIL
 
         /*If queue is empty track idle state */
         if (isEmpty(&ready_queue)) {
-
-            fprintf(fp, "%d\tIdle\t\t", current_time);
+            printf("%d\tIdle\t\t", current_time);
             display_queue(&ready_queue, fp);
-            fprintf(fp, "\n");
-            current_time++;
-            idle_time++;
+            printf("\n");
+            while(isEmpty(&ready_queue)){
+                current_time++;
+                idle_time++;
+
+                while (i < num_processes && processes[i].arrival_time <= current_time) {
+                    enqueue(&ready_queue, processes[i]);
+                    i++;
+                }
+
+            }
 
         } else {
             Process current_process = ready_queue.data[ready_queue.front];
@@ -122,8 +129,16 @@ void simulate_SJF(Process processes[], int num_processes, Options *options, FILE
             printf("%d\tIdle\t\t", current_time);
             display_queue(&ready_queue, fp);
             printf("\n");
-            current_time++;
-            idle_time++;
+            while(isEmpty(&ready_queue)){
+                current_time++;
+                idle_time++;
+
+                while (i < num_processes && processes[i].arrival_time <= current_time) {
+                    enqueue(&ready_queue, processes[i]);
+                    i++;
+                }
+
+            }
         } else {
 
             sort_queue(&ready_queue, compare_burst);
@@ -204,8 +219,16 @@ void simulate_priority(Process processes[], int num_processes, Options *options,
             printf("%d\tIdle\t\t", current_time);
             display_queue(&ready_queue, fp);
             printf("\n");
-            current_time++;
-            idle_time++;
+            while(isEmpty(&ready_queue)){
+                current_time++;
+                idle_time++;
+
+                while (i < num_processes && processes[i].arrival_time <= current_time) {
+                    enqueue(&ready_queue, processes[i]);
+                    i++;
+                }
+
+            }
         } else {
 
             sort_queue(&ready_queue, compare_priority);
@@ -405,6 +428,7 @@ void simulate_SRTF(Process processes[], int num_processes, FILE *fp) {
     int current_time = 0;
     int idle_time = 0;
     char last_process_id[10] = "";
+    int idled = 0;
 
     
     qsort(processes, num_processes, sizeof(Process), compare_arrival);
@@ -425,8 +449,17 @@ void simulate_SRTF(Process processes[], int num_processes, FILE *fp) {
             printf("%d\tIdle\t\t", current_time);
             display_queue(&ready_queue, fp);
             printf("\n");
-            current_time++;
-            idle_time++;
+            while(isEmpty(&ready_queue)){
+                current_time++;
+                idle_time++;
+
+                while (i < num_processes && processes[i].arrival_time <= current_time) {
+                    enqueue(&ready_queue, processes[i]);
+                    i++;
+                }
+
+            }
+            idled = 1;
         } else {
             
             sort_queue(&ready_queue, compare_burst);
@@ -438,12 +471,16 @@ void simulate_SRTF(Process processes[], int num_processes, FILE *fp) {
                 display_queue(&ready_queue, fp);
                 printf("\n");
 
-                for (int j = 0; j < num_processes; j++) {
+                if(!idled){
 
-                    if (strcmp(processes[j].id, last_process_id) == 0) {
-                        processes[j].running_time[current_time] = 1;
-                        break;
+                    for (int j = 0; j < num_processes; j++) {
+
+                        if (strcmp(processes[j].id, last_process_id) == 0) {
+                            processes[j].running_time[current_time] = 1;
+                            break;
+                        }
                     }
+
                 }
 
                 strcpy(last_process_id, current_process->id);
@@ -483,7 +520,8 @@ void simulate_SRTF(Process processes[], int num_processes, FILE *fp) {
                 }
             }
 
-        
+            idled = 0;
+
             while (i < num_processes && processes[i].arrival_time <= current_time) {
                 enqueue(&ready_queue, processes[i]);
                 i++;
@@ -511,6 +549,8 @@ void simulate_preemptive_priority(Process processes[], int num_processes, FILE *
     int idle_time = 0;
     int start_time;
     char last_process_id[10] = "";
+    int idled = 0;
+    int first_run = 1;
 
     qsort(processes, num_processes, sizeof(Process), compare_arrival);
 
@@ -530,8 +570,17 @@ void simulate_preemptive_priority(Process processes[], int num_processes, FILE *
             printf("%d\tIdle\t\t", current_time);
             display_queue(&ready_queue, fp);
             printf("\n");
-            current_time++;
-            idle_time++;
+            while(isEmpty(&ready_queue)){
+                current_time++;
+                idle_time++;
+
+                while (i < num_processes && processes[i].arrival_time <= current_time) {
+                    enqueue(&ready_queue, processes[i]);
+                    i++;
+                }
+
+            }
+            idled = 1;
         } else {
             
             sort_queue(&ready_queue, compare_priority);
@@ -540,16 +589,21 @@ void simulate_preemptive_priority(Process processes[], int num_processes, FILE *
 
 
             if (strcmp(last_process_id, current_process->id) != 0) {
+                
                 printf("%d\tStarted P%s\t", current_time, current_process->id);
                 display_queue(&ready_queue, fp);
                 printf("\n");
 
-                for (int j = 0; j < num_processes; j++) {
+                if(!idled){
 
-                    if (strcmp(processes[j].id, last_process_id) == 0) {
-                        processes[j].running_time[current_time] = 1;
-                        break;
+                    for (int j = 0; j < num_processes; j++) {
+
+                        if (strcmp(processes[j].id, last_process_id) == 0) {
+                            processes[j].running_time[current_time] = 1;
+                            break;
+                        }
                     }
+
                 }
 
                 strcpy(last_process_id, current_process->id);
@@ -588,7 +642,11 @@ void simulate_preemptive_priority(Process processes[], int num_processes, FILE *
                     }
                 }
             }
-       
+
+            idled = 0;
+
+            Process *last_process = &ready_queue.data[ready_queue.front];
+
             while (i < num_processes && processes[i].arrival_time <= current_time) {
                 enqueue(&ready_queue, processes[i]);
                 i++;
@@ -613,6 +671,7 @@ void simulate_round_robin(Process processes[], int num_processes, int time_quant
     int current_time = 0;
     int idle_time = 0;
     int i = 0;
+    int idling = 0;
     char last_process_id[10] = "";
 
     printf("\nRunning Simulation for Round Robin Scheduling\n\n");
@@ -629,13 +688,24 @@ void simulate_round_robin(Process processes[], int num_processes, int time_quant
             i++;
         }
 
-        if (isEmpty(&ready_queue)) {         
+        if (isEmpty(&ready_queue)) {  
+
             printf("%d\tIdle\t\t", current_time);
             display_queue(&ready_queue, fp);
             printf("\n");
-            current_time++;
-            idle_time++;
+            while(isEmpty(&ready_queue)){
+                current_time++;
+                idle_time++;
+
+                while (i < num_processes && processes[i].arrival_time <= current_time) {
+                    enqueue(&ready_queue, processes[i]);
+                    i++;
+                }
+
+            }
+
         } else {
+
             
             Process current_process = ready_queue.data[ready_queue.front];
 
