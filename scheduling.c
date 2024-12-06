@@ -598,7 +598,7 @@ int compare_burst(const void *a, const void *b) {
         return process_a->burst_time - process_b->burst_time;
     }
 
-    /*If Burst times equal compare by arrival*/
+    
     return process_a->arrival_time - process_b->arrival_time;
 }
 
@@ -616,36 +616,29 @@ int compare_priority(const void *a, const void *b) {
         return process_a->priority - process_b->priority;
     }
 
-    /*If priority equal compare by arrival*/
+    
     return process_a->arrival_time - process_b->arrival_time;
 }
 
-void simulate_SRTF(Process processes[], int num_processes, float alpha, int default_burst) {
+void simulate_SRTF(Process processes[], int num_processes) {
 
     CircularQueue ready_queue;
     init_queue(&ready_queue);
 
     int current_time = 0;
     int idle_time = 0;
-    int start_time;
-    int preempted = 0;
     char last_process_id[10] = "";
 
-    // Initialize predicted burst times
-    for (int j = 0; j < num_processes; j++) {
-        processes[j].predicted_burst = default_burst;
-    }
-
-    // Sort processes by arrival time
+    
     qsort(processes, num_processes, sizeof(Process), compare_arrival);
 
-    printf("\nRunning Simulation for Preemptive SJF (Shortest Job First, with Predictions)\n\n");
+    printf("\nRunning Simulation for SRTF (Preemptive SJF)\n\n");
     printf("\n\nTime\tEvent\t\tReady Queue\n");
     printf("---------------------------------------\n");
 
     int i = 0;
     while (i < num_processes || !isEmpty(&ready_queue)) {
-        // Add processes that have arrived
+        
         while (i < num_processes && processes[i].arrival_time <= current_time) {
             enqueue(&ready_queue, processes[i]);
             i++;
@@ -659,24 +652,37 @@ void simulate_SRTF(Process processes[], int num_processes, float alpha, int defa
             idle_time++;
         } else {
             
-            sort_queue(&ready_queue, compare_predicted_burst);
+            sort_queue(&ready_queue, compare_burst);
 
             Process *current_process = &ready_queue.data[ready_queue.front];
 
-            if (strcmp(current_process->id, last_process_id) != 0) {
-                preempted = 1;
+            if (strcmp(last_process_id, current_process->id) != 0) {
+                printf("%d\tStarted P%s\t", current_time, current_process->id);
+                display_queue(&ready_queue);
+                printf("\n");
+
+                for (int j = 0; j < num_processes; j++) {
+
+                    if (strcmp(processes[j].id, last_process_id) == 0) {
+                        processes[j].running_time[current_time] = 1;
+                        break;
+                    }
+                }
+
+                strcpy(last_process_id, current_process->id);
+                
+                if (current_process->remaining_time == current_process->burst_time) {
+                    current_process->start_time = current_time;
+                }
             }
 
+            for (int j = 0; j < num_processes; j++) {
 
-            if (current_process->remaining_time == current_process->burst_time) {
-                current_process->start_time = current_time;
+                if (strcmp(processes[j].id, current_process->id) == 0) {
+                    processes[j].running_time[current_time] = 1;
+                    break;
+                }
             }
-
-            printf("%d\tStarted P%s\t", current_time, current_process->id);
-            display_queue(&ready_queue);
-            printf("\n");
-
-        
             current_process->remaining_time--;
             current_time++;
 
@@ -693,33 +699,12 @@ void simulate_SRTF(Process processes[], int num_processes, float alpha, int defa
                         processes[j].completion_time = current_time;
                         processes[j].turnaround_time = current_time - processes[j].arrival_time;
                         processes[j].waiting_time = processes[j].turnaround_time - processes[j].burst_time;
-                        processes[j].response_time = start_time - processes[j].arrival_time;
+                        processes[j].response_time = current_process->start_time - processes[j].arrival_time;
+                        processes[j].running_time[current_time] = 1;
                         break;
                     }
                 }
             }
-
-    
-            if (preempted) {
-
-                Process *previous_process = NULL;
-                for (int j = 0; j < ready_queue.fill; j++) {
-                    if (strcmp(ready_queue.data[j].id, last_process_id) == 0) {
-                        previous_process = &ready_queue.data[j];
-                        break;
-                    }
-                }
-
-                if (previous_process) {
-                    float execution_time = previous_process->burst_time - previous_process->remaining_time;
-                    previous_process->predicted_burst = 
-                        alpha * execution_time + (1 - alpha) * previous_process->predicted_burst;
-                }
-
-                preempted = 0;
-            }
-
-            strncpy(last_process_id, current_process->id, sizeof(last_process_id));
 
         
             while (i < num_processes && processes[i].arrival_time <= current_time) {
@@ -734,7 +719,8 @@ void simulate_SRTF(Process processes[], int num_processes, float alpha, int defa
 
     qsort(processes, num_processes, sizeof(Process), compare_completion);
     display_metrics(processes, num_processes, idle_time, current_time);
-    display_chart(processes, num_processes);
+    qsort(processes, num_processes, sizeof(Process), compare_arrival);
+    display_preemptive_chart(processes, num_processes);
 }
 
 
@@ -747,10 +733,11 @@ void simulate_preemptive_priority(Process processes[], int num_processes) {
     int current_time = 0;
     int idle_time = 0;
     int start_time;
+    char last_process_id[10] = "";
 
     qsort(processes, num_processes, sizeof(Process), compare_arrival);
 
-    printf("\nRunning Simulation for Preemptive SJF (Shortest Job First, with Predictions)\n\n");
+    printf("\nRunning Simulation for Preemptive Priority\n\n");
     printf("\n\nTime\tEvent\t\tReady Queue\n");
     printf("---------------------------------------\n");
 
@@ -775,15 +762,33 @@ void simulate_preemptive_priority(Process processes[], int num_processes) {
             Process *current_process = &ready_queue.data[ready_queue.front];
 
 
-            if (current_process->remaining_time == current_process->burst_time) {
-                current_process->start_time = current_time;
+            if (strcmp(last_process_id, current_process->id) != 0) {
+                printf("%d\tStarted P%s\t", current_time, current_process->id);
+                display_queue(&ready_queue);
+                printf("\n");
+
+                for (int j = 0; j < num_processes; j++) {
+
+                    if (strcmp(processes[j].id, last_process_id) == 0) {
+                        processes[j].running_time[current_time] = 1;
+                        break;
+                    }
+                }
+
+                strcpy(last_process_id, current_process->id);
+                
+                if (current_process->remaining_time == current_process->burst_time) {
+                    current_process->start_time = current_time;
+                }
             }
 
-            printf("%d\tStarted P%s\t", current_time, current_process->id);
-            display_queue(&ready_queue);
-            printf("\n");
+            for (int j = 0; j < num_processes; j++) {
 
-        
+                if (strcmp(processes[j].id, current_process->id) == 0) {
+                    processes[j].running_time[current_time] = 1;
+                    break;
+                }
+            }
             current_process->remaining_time--;
             current_time++;
 
@@ -800,7 +805,8 @@ void simulate_preemptive_priority(Process processes[], int num_processes) {
                         processes[j].completion_time = current_time;
                         processes[j].turnaround_time = current_time - processes[j].arrival_time;
                         processes[j].waiting_time = processes[j].turnaround_time - processes[j].burst_time;
-                        processes[j].response_time = start_time - processes[j].arrival_time;
+                        processes[j].response_time = current_process->start_time - processes[j].arrival_time;
+                        processes[j].running_time[current_time] = 1;
                         break;
                     }
                 }
@@ -818,7 +824,8 @@ void simulate_preemptive_priority(Process processes[], int num_processes) {
 
     qsort(processes, num_processes, sizeof(Process), compare_completion);
     display_metrics(processes, num_processes, idle_time, current_time);
-    display_chart(processes, num_processes);
+    qsort(processes, num_processes, sizeof(Process), compare_arrival);
+    display_preemptive_chart(processes, num_processes);
 }
 
 void simulate_round_robin(Process processes[], int num_processes, int time_quantum) {
@@ -864,8 +871,7 @@ void simulate_round_robin(Process processes[], int num_processes, int time_quant
                     break;
                 }
             }
-
-            
+   
             int exec_time = (current_process.remaining_time > time_quantum) ? time_quantum : current_process.remaining_time;
             printf("%d\tRunning P%s\t", current_time, current_process.id);
             display_queue(&ready_queue);
@@ -917,6 +923,62 @@ int compare_predicted_burst(const void *a, const void *b) {
         return process_a->predicted_burst - process_b->predicted_burst;
     }
 
-    /*If Burst times equal compare by arrival*/
     return process_a->arrival_time - process_b->arrival_time;
+}
+
+void display_preemptive_chart(Process processes[], int num_processes) {
+    int max_time = 0;
+    int current_time = 0;
+    int flag = 0;
+
+    
+    for (int i = 0; i < num_processes; i++) {
+        if (processes[i].completion_time > max_time) {
+            max_time = processes[i].completion_time;
+        }
+    }
+
+    printf("\nGantt Chart:\n");
+    printf(ANSI_BOLD ANSI_BLUE "--------------------------------------------" ANSI_RESET "\n");
+
+    
+    for (int start = 0; start <= max_time; start += MAX_WIDTH) {
+        int end = (start + MAX_WIDTH - 1 < max_time) ? start + MAX_WIDTH - 1 : max_time;
+
+        printf(ANSI_BOLD ANSI_BLUE "Time: " ANSI_RESET);
+        for (int t = start; t <= end; t++) {
+            printf(ANSI_BOLD ANSI_BLUE "%-4d" ANSI_RESET, t);  
+        }
+        printf("\n");
+
+        
+        for (int i = 0; i < num_processes; i++) {
+            const char* color;
+            switch (i % 5) {
+                case 0: color = ANSI_RED; break;
+                case 1: color = ANSI_GREEN; break;
+                case 2: color = ANSI_YELLOW; break;
+                case 3: color = ANSI_BLUE; break;
+                case 4: color = ANSI_MAGENTA; break;
+            }
+            printf("%sP%-2s| " ANSI_RESET, color, processes[i].id);  
+
+            
+            for (int t = start; t <= end; t++) {
+                if (processes[i].running_time[t] == 1) {  
+                    printf("%s### " ANSI_RESET, color); 
+                } else {
+                    if(!flag){
+
+                    }
+
+                    printf("    ");  
+                }
+                current_time++;
+            }
+            printf("\n");
+        }
+
+        printf(ANSI_BOLD ANSI_BLUE "--------------------------------------------" ANSI_RESET "\n");
+    }
 }
