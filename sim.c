@@ -116,13 +116,13 @@ void run_selected_algorithm(Process processes[], int num_processes, Options *opt
     } else if (strcmp(options->alg_selection, "sjf") == 0) {
         simulate_SJF(processes, num_processes, options, fp);
     } else if (strcmp(options->alg_selection, "rr") == 0) {
-        simulate_round_robin(processes, num_processes, 3);
+        simulate_round_robin(processes, num_processes, 3, fp);
     } else if (strcmp(options->alg_selection, "priority") == 0) {
         simulate_priority(processes, num_processes, options, fp);
     } else if (strcmp(options->alg_selection, "srtf") == 0){
-        simulate_SRTF(processes, num_processes);
+        simulate_SRTF(processes, num_processes, fp);
     } else if (strcmp(options->alg_selection, "pp") == 0) {
-        simulate_preemptive_priority(processes, num_processes);
+        simulate_preemptive_priority(processes, num_processes, fp);
     } else{
          printf("Invalid choice.\n");
     }

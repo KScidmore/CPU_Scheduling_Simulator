@@ -1,6 +1,5 @@
-Currently, these work
+Not tested 
 -----
-./sim
 
 ./sim < testing/menu_input/fcfs_1.txt > testout1.txt
 
@@ -24,7 +23,12 @@ Currently, these work
 
 
 
-These do not
-------
 ./sim < testing/menu_input/fcfs_1.txt -o testout.txt 
     - Invalid choice 
+
+Currently, these work
+-----
+./sim
+
+These do not
+------
