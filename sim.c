@@ -12,6 +12,7 @@
 int parse_cli_args(int argc, char **argv, Options *options);
 void init_options(Options *options);
 void print_help();
+int process_input(Process processes[], int choice);
 int process_file_input(Process processes[], Options *options);
 void run_cli_mode(int argc, char **argv, Process processes[], Options *options);
 void run_interactive_mode(Process processes[], Options *options);
@@ -51,26 +52,23 @@ void run_cli_mode(int argc, char **argv, Process processes[], Options *options) 
         num_processes = process_file_input(processes, options);
     } else {
         // get interactively if null 
+        if (options->alg_selection[0] == '\0') {
+            print_scheduling_menu();
+            scanf("%d", &choice);
+            switch (choice) {
+                case 1: strcpy(options->alg_selection, "fcfs"); break;
+                case 2: strcpy(options->alg_selection, "sjf"); break;
+                case 3: strcpy(options->alg_selection, "rr"); break;
+                case 4: strcpy(options->alg_selection, "priority"); break;
+                default: break;
+            } 
+        } 
         num_processes = process_input(processes, choice);
     }
 
     if (options->output_file[0] != '\0') {
         output = fopen(options->output_file, "w");
     }
-
-    if (options->alg_selection[0] == '\0') {
-        if (isatty(fileno(stdin))) {
-            print_scheduling_menu();
-            scanf("%d", &choice);
-        }
-        switch (choice) {
-            case 1: strcpy(options->alg_selection, "fcfs"); break;
-            case 2: strcpy(options->alg_selection, "sjf"); break;
-            case 3: strcpy(options->alg_selection, "rr"); break;
-            case 4: strcpy(options->alg_selection, "priority"); break;
-            default: break;
-        }
-    } 
 
     run_selected_algorithm(processes, num_processes, options, output);
 }
@@ -122,30 +120,30 @@ void run_selected_algorithm(Process processes[], int num_processes, Options *opt
 }
 
 
-int process_input(Process processes[], int choice){
+int process_input(Process processes[], int choice) {
 
-    printf("%d", choice);
+    fprintf(stderr, "%d", choice);
     int num;
-    printf("\nEnter the number of processes (max %d): ", MAX_PROCESSES);
+    fprintf(stderr, "\nEnter the number of processes (max %d): ", MAX_PROCESSES);
     scanf("%d", &num);
 
     if(num < 1 || num > MAX_PROCESSES){
-        printf("Invalid number of processes. Exiting.\n");
+        fprintf(stderr, "Invalid number of processes. Exiting.\n");
         exit(1);
     }
 
     for(int i = 0; i < num; i++){
 
-        printf("\nEnter Process Details %d\n", i + 1);
-        printf("Process ID: ");
+        fprintf(stderr, "\nEnter Process Details %d\n", i + 1);
+        fprintf(stderr, "Process ID: ");
         scanf("%s", processes[i].id);
-        printf("Arrival Time: ");
+        fprintf(stderr, "Arrival Time: ");
         scanf("%d", &processes[i].arrival_time);
-        printf("Burst Time: ");
+        fprintf(stderr, "Burst Time: ");
         scanf("%d", &processes[i].burst_time);
 
         if(choice == 4){
-            printf("Priority: ");
+            fprintf(stderr, "Priority: ");
             scanf("%d", &processes[i].priority);
         }
 
