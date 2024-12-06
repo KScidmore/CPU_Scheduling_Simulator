@@ -116,7 +116,7 @@ void run_selected_algorithm(Process processes[], int num_processes, Options *opt
     } else if (strcmp(options->alg_selection, "sjf") == 0) {
         simulate_SJF(processes, num_processes, options, fp);
     } else if (strcmp(options->alg_selection, "rr") == 0) {
-        simulate_round_robin(processes, num_processes, 3, fp);
+        simulate_round_robin(processes, num_processes, 2, fp);
     } else if (strcmp(options->alg_selection, "priority") == 0) {
         simulate_priority(processes, num_processes, options, fp);
     } else if (strcmp(options->alg_selection, "srtf") == 0){
