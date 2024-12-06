@@ -66,22 +66,26 @@ Process dequeue(CircularQueue *queue) {
     }
 }
 
-void display_queue(CircularQueue *queue) {
-    printf("[");
+void display_queue(CircularQueue *queue, FILE *fp) {
+
+    fprintf(fp, "[");
     if (!isEmpty(queue)) {
         for (int i = 0; i < queue->fill; i++) {
             int index = (queue->front + i) % MAX_PROCESSES;
-            printf("P%s", queue->data[index].id); // Add "P" before the process ID
-            if (i < queue->fill - 1) printf(", ");
+            fprintf(fp, "P%s", queue->data[index].id); // Add "P" before the process ID
+            if (i < queue->fill - 1) fprintf(fp, ", ");
         }
     }
-    printf("]");
+    fprintf(fp, "]");
 }
 
 
 /*---------- Helper Functions Not Used Outside Module ------------------------*/
 
 void circ_queue_test_1() {
+
+    FILE *fp = stdout;
+
     int i;
 
     Process processes[MAX_PROCESSES];
@@ -128,7 +132,7 @@ void circ_queue_test_1() {
     printf("Enqueuing an item.\n");
     enqueue(&ready_queue, processes[MAX_PROCESSES - 1]);
     printf("Displaying current queue: ");
-    display_queue(&ready_queue);
+    display_queue(&ready_queue, fp);
     printf("\n\n");
     
     /* check if empty and/or full */
@@ -142,7 +146,7 @@ void circ_queue_test_1() {
     printf("Enqueuing out of top bound.\n");
     enqueue(&ready_queue, processes[MAX_PROCESSES]);
     printf("Displaying current queue: ");
-    display_queue(&ready_queue);
+    display_queue(&ready_queue, fp);
     printf("\n\n");
 
     /* peek at front and rear */
@@ -154,7 +158,7 @@ void circ_queue_test_1() {
         printf("Dequeuing an item.\n");
         dequeue(&ready_queue);
         printf("Displaying current queue: ");
-        display_queue(&ready_queue);
+        display_queue(&ready_queue, fp);
         printf("\n\n");
         /* peek at front and rear */
         peek_front(&ready_queue);
