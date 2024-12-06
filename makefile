@@ -45,7 +45,7 @@ sim.o: sim.c sim.h globals.h process.h options.h
 scheduling.o: scheduling.c scheduling.h globals.h process.h circular_queue.h options.h
 	$(CC) $(CFLAGS) -c scheduling.c 
 
-circular_queue.o: circular_queue.h globals.h process.h 
+circular_queue.o: circular_queue.h globals.h process.h options.h
 	$(CC) $(CFLAGS) -c circular_queue.c 
 
 # The empty line above this comment must remain to avoid errors

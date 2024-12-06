@@ -14,6 +14,7 @@ typedef struct {
     int response_time;
     int predicted_burst;
     int has_started;
+    int running_time[999];
     
 } Process;
 
