@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "process.h"
 #include "scheduling.h"
 #include "globals.h"
@@ -23,8 +24,13 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options, FIL
 
     qsort(processes, num_processes, sizeof(Process), compare_arrival);
 
-    fprintf(fp, "\n\nTime\tEvent\t\tReady Queue\n");
-    fprintf(fp, "---------------------------------------\n");
+    fprintf(fp, "~~~~~~~~~~\n\n");
+    //fprintf(fp, "\n\nTime\tEvent\t\tReady Queue\n");
+    //fprintf(fp, "\n\n+---------+---------------------+----------------------------------\n");
+    fprintf(fp, "+---------+---------------------+---------------------------\n");
+    fprintf(fp, "| %-8s| %-20s| %-40s", "Time", "Event", "Ready Queue");
+    fprintf(fp, "\n+---------+---------------------+---------------------------\n");
+    //fprintf(fp, "\n---------------------------------------\n");
 
     int i = 0; 
     while (i < num_processes || !isEmpty(&ready_queue)) {
@@ -37,7 +43,10 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options, FIL
 
         /*If queue is empty track idle state */
         if (isEmpty(&ready_queue)) {
-            printf("%d\tIdle\t\t", current_time);
+
+            //fprintf(fp, "%d\tIdle\t\t", current_time);
+            fprintf(fp, "| %-8d| %-20s| ", current_time, "Idle");
+
             display_queue(&ready_queue, fp);
             printf("\n");
             while(isEmpty(&ready_queue)){
@@ -55,7 +64,8 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options, FIL
             Process current_process = ready_queue.data[ready_queue.front];
 
             start_time = current_time;
-            fprintf(fp, "%d\tStarted P%s\t", current_time, current_process.id);
+            //fprintf(fp, "%d\tStarted P%s\t", current_time, current_process.id);
+            fprintf(fp, "| %-8d| Started P%-11s| ", current_time, current_process.id);
             display_queue(&ready_queue, fp);
             fprintf(fp, "\n");
 
@@ -81,21 +91,28 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options, FIL
                 i++;
             }
 
-            fprintf(fp, "%d\tCompleted P%s\t", current_time, current_process.id);
+            //fprintf(fp, "%d\tCompleted P%s\t", current_time, current_process.id);
+            fprintf(fp, "| %-8d| Completed P%-9s| ", current_time, current_process.id);
             display_queue(&ready_queue, fp);
             fprintf(fp, "\n");
 
         }
     }
 
-    printf("---------------------------------------\n");
-    printf("Simulation complete.\n\n");
+    //printf("---------------------------------------\n");
+    fprintf(fp, "+---------+---------------------+---------------------------\n");
+    printf("Simulation complete.");
+    fprintf(fp, "\n\n~~~~~~~~~~\n\n");
 
     qsort(processes, num_processes, sizeof(Process), compare_completion);
 
     display_metrics(processes, num_processes, idle_time, current_time, fp);
+    fprintf(fp, "\n~~~~~~~~~~\n");
 
-    display_chart(processes, num_processes, fp);
+    isatty(fileno(fp)) ?
+    display_chart(processes, num_processes, fp) :
+    display_chart_file(processes, num_processes, fp);
+    fprintf(fp, "\n~~~~~~~~~~\n");
 
 }
 
@@ -330,7 +347,7 @@ void display_metrics(Process processes[], int num_processes, int idle_time, int 
 
 
 void display_chart(Process processes[], int num_processes, FILE *fp) {
-
+   
     int max_time = 0;
     int current_time = 0;
 
@@ -380,6 +397,52 @@ void display_chart(Process processes[], int num_processes, FILE *fp) {
         }
 
         fprintf(fp, ANSI_BOLD ANSI_BLUE "--------------------------------------------" ANSI_RESET "\n");
+    }
+}
+
+void display_chart_file(Process processes[], int num_processes, FILE *fp) {
+   
+    int max_time = 0;
+    int current_time = 0;
+
+    for (int i = 0; i < num_processes; i++) {
+        if (processes[i].completion_time > max_time) {
+            max_time = processes[i].completion_time;
+        }
+    }
+
+    fprintf(fp, "\nGantt Chart:\n");
+    fprintf(fp, "--------------------------------------------\n");
+
+    for (int start = 0; start <= max_time; start += MAX_WIDTH) {
+
+        int end = (start + MAX_WIDTH - 1 < max_time) ? start + MAX_WIDTH - 1 : max_time;
+
+        
+        fprintf(fp, "Time: ");
+        for (int t = start; t <= end; t++) {
+            fprintf(fp, "%-4d", t);  
+        }
+        fprintf(fp, "\n");
+
+        
+        for (int i = 0; i < num_processes; i++) {
+            fprintf(fp, "P%-2s| ", processes[i].id);  
+
+            for (int j = start; j <= end; j++) {
+                if (j >= processes[i].start_time && j <= processes[i].completion_time) {
+                    
+                    fprintf(fp, "### "); 
+                    
+                } else {
+                    fprintf(fp, "    "); 
+                }
+                current_time++;
+            }
+            fprintf(fp, "\n");
+        }
+
+        fprintf(fp, "--------------------------------------------\n");
     }
 }
 

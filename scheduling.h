@@ -20,6 +20,7 @@ int compare_priority(const void *a, const void *b);
 int compare_predicted_burst(const void *a, const void *b);
 
 void display_chart(Process processes[], int num_processes, FILE *fp);
+void display_chart_file(Process processes[], int num_processes, FILE *fp);
 void display_metrics(Process processes[], int num_processes, int idle_time, int current_time, FILE *fp);
 void display_preemptive_chart(Process processes[], int num_processes, FILE *fp);
 
