@@ -86,8 +86,10 @@ void run_interactive_mode(Process processes[], Options *options) {
     switch (choice) {
         case 1: strcpy(options->alg_selection, "fcfs"); break;
         case 2: strcpy(options->alg_selection, "sjf"); break;
-        case 3: strcpy(options->alg_selection, "rr"); break;
-        case 4: strcpy(options->alg_selection, "priority"); break;
+        case 3: strcpy(options->alg_selection, "srtf"); break;
+        case 4: strcpy(options->alg_selection, "rr"); break;
+        case 5: strcpy(options->alg_selection, "priority"); break;
+        case 6: strcpy(options->alg_selection, "pp"); break;
         default: break;
     }
 
@@ -100,9 +102,12 @@ void print_scheduling_menu() {
     fprintf(stderr, "\nSelect a Scheduling Algorithm:\n");
     fprintf(stderr, "1. FCFS (First Come First Serve)\n");
     fprintf(stderr, "2. SJF (Shortest Job First)\n");
-    fprintf(stderr, "3. RR (Round Robin)\n");
-    fprintf(stderr, "4. Priority Scheduling\n");
+    fprintf(stderr, "3. SRTF (Shortest Remaining Time First)\n");
+    fprintf(stderr, "4. RR (Round Robin)\n");
+    fprintf(stderr, "5. Priority Scheduling\n");
+    fprintf(stderr, "6. PP (Preemptive Priority)\n");
     fprintf(stderr, "\nEnter your choice (1-4): ");
+
 }
 
 void run_selected_algorithm(Process processes[], int num_processes, Options *options, FILE *fp) {
@@ -111,50 +116,75 @@ void run_selected_algorithm(Process processes[], int num_processes, Options *opt
     } else if (strcmp(options->alg_selection, "sjf") == 0) {
         simulate_SJF(processes, num_processes, options, fp);
     } else if (strcmp(options->alg_selection, "rr") == 0) {
-        /* TODO */
+        simulate_round_robin(processes, num_processes, 3);
     } else if (strcmp(options->alg_selection, "priority") == 0) {
         simulate_priority(processes, num_processes, options, fp);
-    } else {
-        printf("Invalid choice.\n");
+    } else if (strcmp(options->alg_selection, "srtf") == 0){
+        simulate_SRTF(processes, num_processes);
+    } else if (strcmp(options->alg_selection, "pp") == 0) {
+        simulate_preemptive_priority(processes, num_processes);
+    } else{
+         printf("Invalid choice.\n");
     }
 }
 
 
 int process_input(Process processes[], int choice) {
-
     fprintf(stderr, "%d", choice);
     int num;
     fprintf(stderr, "\nEnter the number of processes (max %d): ", MAX_PROCESSES);
     scanf("%d", &num);
+
 
     if(num < 1 || num > MAX_PROCESSES){
         fprintf(stderr, "Invalid number of processes. Exiting.\n");
         exit(1);
     }
 
-    for(int i = 0; i < num; i++){
+    for (int i = 0; i < num; i++) {
+        char temp_id[10];
+        int unique = 0;
 
         fprintf(stderr, "\nEnter Process Details %d\n", i + 1);
-        fprintf(stderr, "Process ID: ");
-        scanf("%s", processes[i].id);
+
+        // Ensure the ID is unique
+        while (!unique) {
+            fprintf(stderr, "Process ID: ");
+            scanf("%s", temp_id);
+
+            if (is_unique_id(processes, i, temp_id)) {
+                unique = 1; // ID is unique
+                strcpy(processes[i].id, temp_id);
+            } else {
+                fprintf(stderr, "ID already taken. Please enter a unique ID.\n");
+            }
+        }
+
         fprintf(stderr, "Arrival Time: ");
         scanf("%d", &processes[i].arrival_time);
         fprintf(stderr, "Burst Time: ");
         scanf("%d", &processes[i].burst_time);
 
-        if(choice == 4){
+
+        if (choice == 5 || choice == 6) {
             fprintf(stderr, "Priority: ");
             scanf("%d", &processes[i].priority);
         }
 
-        /*Set up other default values*/
+        /* Set up other default values */
         processes[i].remaining_time = processes[i].burst_time;
         processes[i].start_time = -1;
         processes[i].completion_time = 0;
         processes[i].turnaround_time = 0;
         processes[i].waiting_time = 0;
         processes[i].response_time = -1;
+        processes[i].predicted_burst = -1;
+        processes[i].has_started = 0;
 
+        for(int j = 0; j < MAX_RUNTIME; j++){
+
+            processes[i].running_time[j] = 0;
+        }
     }
 
     return num;
@@ -236,7 +266,8 @@ int process_file_input(Process processes[], Options *options) {
         processes[i].turnaround_time = -1;    
         processes[i].waiting_time = -1;       
         processes[i].response_time = -1;
-
+        processes[i].predicted_burst = -1;
+        processes[i].has_started = 0;
         i++;
     }
 
@@ -244,4 +275,13 @@ int process_file_input(Process processes[], Options *options) {
         fclose(input);
     }
     return i;
+}
+
+int is_unique_id(Process processes[], int count, char *id) {
+    for (int i = 0; i < count; i++) {
+        if (strcmp(processes[i].id, id) == 0) {
+            return 0;
+        }
+    }
+    return 1;
 }

@@ -17,4 +17,13 @@ void display_chart(Process processes[], int num_processes, FILE *fp);
 int compare_priority(const void *a, const void *b);
 void simulate_priority(Process processes[], int num_processes, Options *options, FILE *fp);
 
+
+void simulate_SRTF(Process processes[], int num_processes);
+void simulate_preemptive_priority(Process processes[], int num_processes);
+void simulate_round_robin(Process processes[], int num_processes, int time_quantum);
+
+int compare_predicted_burst(const void *a, const void *b);
+
+void display_preemptive_chart(Process processes[], int num_processes);
+
 #endif

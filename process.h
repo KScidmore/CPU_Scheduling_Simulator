@@ -12,6 +12,10 @@ typedef struct {
     int turnaround_time;    // Turnaround time = completion_time - arrival_time
     int waiting_time;       // Waiting time = turnaround_time - burst_time
     int response_time;
+    int predicted_burst;
+    int has_started;
+    int running_time[999];
+    
 } Process;
 
 
