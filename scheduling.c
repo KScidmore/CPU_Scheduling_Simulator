@@ -613,6 +613,7 @@ void simulate_round_robin(Process processes[], int num_processes, int time_quant
     int current_time = 0;
     int idle_time = 0;
     int i = 0;
+    char last_process_id[10] = "";
 
     printf("\nRunning Simulation for Round Robin Scheduling\n\n");
     qsort(processes, num_processes, sizeof(Process), compare_arrival); 
@@ -628,8 +629,7 @@ void simulate_round_robin(Process processes[], int num_processes, int time_quant
             i++;
         }
 
-        if (isEmpty(&ready_queue)) {
-            
+        if (isEmpty(&ready_queue)) {         
             printf("%d\tIdle\t\t", current_time);
             display_queue(&ready_queue, fp);
             printf("\n");
@@ -650,10 +650,34 @@ void simulate_round_robin(Process processes[], int num_processes, int time_quant
             }
    
             int exec_time = (current_process.remaining_time > time_quantum) ? time_quantum : current_process.remaining_time;
-            printf("%d\tRunning P%s\t", current_time, current_process.id);
-            display_queue(&ready_queue, fp);
-            printf("\n");
+
+
+            if(strcmp(current_process.id, last_process_id) != 0){
+
+                printf("%d\tStarted P%s\t", current_time, current_process.id);
+                display_queue(&ready_queue, fp);
+                printf("\n");
+                strcpy(last_process_id, current_process.id);
+
+            }
+
             dequeue(&ready_queue);
+
+            for (int j = 0; j < num_processes; j++) {
+
+                if (strcmp(processes[j].id, current_process.id) == 0) {
+                    
+                    int time_unit = current_time;
+                    for(int k = 0; k <= exec_time; k++){
+
+                        processes[j].running_time[time_unit] = 1;
+                        time_unit++;
+
+                    }
+                    
+                    break;
+                }
+            }
 
             current_time += exec_time;
             current_process.remaining_time -= exec_time;
@@ -689,7 +713,7 @@ void simulate_round_robin(Process processes[], int num_processes, int time_quant
 
 
     display_metrics(processes, num_processes, idle_time, current_time, fp);
-    display_chart(processes, num_processes, fp);
+    display_preemptive_chart(processes, num_processes, fp);
 }
 
 int compare_predicted_burst(const void *a, const void *b) {
@@ -759,3 +783,5 @@ void display_preemptive_chart(Process processes[], int num_processes, FILE *fp) 
         printf(ANSI_BOLD ANSI_BLUE "--------------------------------------------" ANSI_RESET "\n");
     }
 }
+
+
