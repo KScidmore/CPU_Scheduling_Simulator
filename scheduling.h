@@ -5,20 +5,17 @@
 #include "circular_queue.h"
 #include "options.h"
 
-void simulate_FCFS_to_stdout(Process processes[], int num_processes);
-void simulate_FCFS_to_file(Process processes[], int num_processes, Options *options);
+void simulate_FCFS(Process processes[], int num_processes, Options *options, FILE *fp);
 int compare_arrival(const void *a, const void *b);
-void display_metrics(Process processes[], int num_processes, int idle_time, int current_time);
-void simulate_SJF_to_stdout(Process processes[], int num_processes);
-void simulate_SJF_to_file(Process processes[], int num_processes, Options *options);
+void display_metrics(Process processes[], int num_processes, int idle_time, int current_time, FILE *fp);
+void simulate_SJF(Process processes[], int num_processes, Options *options, FILE *fp);
 int compare_burst(const void *a, const void *b);
 void sort_queue(CircularQueue *queue, int (*compare)(const void *, const void *));
 int compare_completion(const void *a, const void *b);
-void display_chart(Process processes[], int num_processes);
+void display_chart(Process processes[], int num_processes, FILE *fp);
 
 int compare_priority(const void *a, const void *b);
-void simulate_priority_to_stdout(Process processes[], int num_processes);
-void simulate_priority_to_file(Process processes[], int num_processes, Options *options);
+void simulate_priority(Process processes[], int num_processes, Options *options, FILE *fp);
 
 
 void simulate_SRTF(Process processes[], int num_processes);

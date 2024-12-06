@@ -25,6 +25,6 @@ int isEmpty(CircularQueue *queue);
 int isFull(CircularQueue *queue);
 void enqueue(CircularQueue *queue, Process process);
 Process dequeue(CircularQueue *queue);
-void display_queue(CircularQueue *queue);
+void display_queue(CircularQueue *queue, FILE *fp);
 
 #endif

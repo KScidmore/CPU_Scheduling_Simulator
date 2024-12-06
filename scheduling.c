@@ -11,7 +11,8 @@
 #include "options.h"
 
 
-void simulate_FCFS_to_stdout(Process processes[], int num_processes) {
+
+void simulate_FCFS(Process processes[], int num_processes, Options *options, FILE *fp) {
 
     CircularQueue ready_queue;
     init_queue(&ready_queue);
@@ -22,8 +23,8 @@ void simulate_FCFS_to_stdout(Process processes[], int num_processes) {
 
     qsort(processes, num_processes, sizeof(Process), compare_arrival);
 
-    printf("\n\nTime\tEvent\t\tReady Queue\n");
-    printf("---------------------------------------\n");
+    fprintf(fp, "\n\nTime\tEvent\t\tReady Queue\n");
+    fprintf(fp, "---------------------------------------\n");
 
     int i = 0; 
     while (i < num_processes || !isEmpty(&ready_queue)) {
@@ -37,9 +38,9 @@ void simulate_FCFS_to_stdout(Process processes[], int num_processes) {
         /*If queue is empty track idle state */
         if (isEmpty(&ready_queue)) {
 
-            printf("%d\tIdle\t\t", current_time);
-            display_queue(&ready_queue);
-            printf("\n");
+            fprintf(fp, "%d\tIdle\t\t", current_time);
+            display_queue(&ready_queue, fp);
+            fprintf(fp, "\n");
             current_time++;
             idle_time++;
 
@@ -47,9 +48,9 @@ void simulate_FCFS_to_stdout(Process processes[], int num_processes) {
             Process current_process = ready_queue.data[ready_queue.front];
 
             start_time = current_time;
-            printf("%d\tStarted P%s\t", current_time, current_process.id);
-            display_queue(&ready_queue);
-            printf("\n");
+            fprintf(fp, "%d\tStarted P%s\t", current_time, current_process.id);
+            display_queue(&ready_queue, fp);
+            fprintf(fp, "\n");
 
             dequeue(&ready_queue);
             /*Update current time and current processes metrics*/
@@ -73,9 +74,9 @@ void simulate_FCFS_to_stdout(Process processes[], int num_processes) {
                 i++;
             }
 
-            printf("%d\tCompleted P%s\t", current_time, current_process.id);
-            display_queue(&ready_queue);
-            printf("\n");
+            fprintf(fp, "%d\tCompleted P%s\t", current_time, current_process.id);
+            display_queue(&ready_queue, fp);
+            fprintf(fp, "\n");
 
         }
     }
@@ -85,95 +86,15 @@ void simulate_FCFS_to_stdout(Process processes[], int num_processes) {
 
     qsort(processes, num_processes, sizeof(Process), compare_completion);
 
-    display_metrics(processes, num_processes, idle_time, current_time);
+    display_metrics(processes, num_processes, idle_time, current_time, fp);
 
-    display_chart(processes, num_processes);
-
-}
-
-/* TODO */
-void simulate_FCFS_to_file(Process processes[], int num_processes, Options *options) {
-
-    CircularQueue ready_queue;
-    init_queue(&ready_queue);
-
-    int current_time = 0;
-    int idle_time = 0;
-    int start_time;
-
-    qsort(processes, num_processes, sizeof(Process), compare_arrival);
-
-    printf("\n\nTime\tEvent\t\tReady Queue\n");
-    printf("---------------------------------------\n");
-
-    int i = 0; 
-    while (i < num_processes || !isEmpty(&ready_queue)) {
-       
-        /*Check if processes have arrived, stops when it finds a process that hasnt*/
-        while (i < num_processes && processes[i].arrival_time <= current_time) {
-            enqueue(&ready_queue, processes[i]);
-            i++;
-        }
-
-        /*If queue is empty track idle state */
-        if (isEmpty(&ready_queue)) {
-
-            printf("%d\tIdle\t\t", current_time);
-            display_queue(&ready_queue);
-            printf("\n");
-            current_time++;
-            idle_time++;
-
-        } else {
-            Process current_process = ready_queue.data[ready_queue.front];
-
-            start_time = current_time;
-            printf("%d\tStarted P%s\t", current_time, current_process.id);
-            display_queue(&ready_queue);
-            printf("\n");
-
-            dequeue(&ready_queue);
-            /*Update current time and current processes metrics*/
-            current_time += current_process.burst_time;
-
-            for(int j = 0; j < num_processes; j++){
-
-                if(strcmp(processes[j].id, current_process.id) == 0){
-                    processes[j].completion_time = current_time;
-                    processes[j].turnaround_time = current_time - processes[j].arrival_time;
-                    processes[j].waiting_time = processes[j].turnaround_time - processes[j].burst_time;
-                    processes[j].response_time = start_time - processes[j].arrival_time;
-                    processes[j].start_time = start_time;
-                    break;
-                }
-            }
-
-            /*After process completes check if any processes arrived during execution or a time of completion*/
-            while (i < num_processes && processes[i].arrival_time <= current_time) {
-                enqueue(&ready_queue, processes[i]);
-                i++;
-            }
-
-            printf("%d\tCompleted P%s\t", current_time, current_process.id);
-            display_queue(&ready_queue);
-            printf("\n");
-
-        }
-    }
-
-    printf("---------------------------------------\n");
-    printf("Simulation complete.\n\n");
-
-    qsort(processes, num_processes, sizeof(Process), compare_completion);
-
-    display_metrics(processes, num_processes, idle_time, current_time);
-
-    display_chart(processes, num_processes);
+    display_chart(processes, num_processes, fp);
 
 }
 
-/* TODO */
-void simulate_SJF_to_stdout(Process processes[], int num_processes) {
+
+void simulate_SJF(Process processes[], int num_processes, Options *options, FILE *fp) {
+
 
     CircularQueue ready_queue;
     init_queue(&ready_queue);
@@ -199,7 +120,7 @@ void simulate_SJF_to_stdout(Process processes[], int num_processes) {
         if (isEmpty(&ready_queue)) {
 
             printf("%d\tIdle\t\t", current_time);
-            display_queue(&ready_queue);
+            display_queue(&ready_queue, fp);
             printf("\n");
             current_time++;
             idle_time++;
@@ -211,7 +132,7 @@ void simulate_SJF_to_stdout(Process processes[], int num_processes) {
 
             start_time = current_time;
             printf("%d\tStarted P%s\t", current_time, current_process.id);
-            display_queue(&ready_queue);
+            display_queue(&ready_queue, fp);
             printf("\n");
             dequeue(&ready_queue);
             current_time += current_process.burst_time;
@@ -233,7 +154,7 @@ void simulate_SJF_to_stdout(Process processes[], int num_processes) {
             }
 
             printf("%d\tCompleted P%s\t", current_time, current_process.id);
-            display_queue(&ready_queue);
+            display_queue(&ready_queue, fp);
             printf("\n");
         }
     }
@@ -243,89 +164,19 @@ void simulate_SJF_to_stdout(Process processes[], int num_processes) {
 
     qsort(processes, num_processes, sizeof(Process), compare_completion);
 
-    display_metrics(processes, num_processes, idle_time, current_time);
+    display_metrics(processes, num_processes, idle_time, current_time, fp);
 
-    display_chart(processes, num_processes);
+    display_chart(processes, num_processes, fp);
+
 }
 
 
-void simulate_SJF_to_file(Process processes[], int num_processes, Options *options) {
-
-    CircularQueue ready_queue;
-    init_queue(&ready_queue);
-
-    int current_time = 0;
-    int idle_time = 0;
-    int start_time;
-
-    printf("\nRunning Simulation for SJF (Shortest Job First)\n\n");
-    qsort(processes, num_processes, sizeof(Process), compare_arrival);
-
-    printf("\n\nTime\tEvent\t\tReady Queue\n");
-    printf("---------------------------------------\n");
-
-    int i = 0;
-    while (i < num_processes || !isEmpty(&ready_queue)) {
-
-        while (i < num_processes && processes[i].arrival_time <= current_time) {
-            enqueue(&ready_queue, processes[i]);
-            i++;
-        }
-
-        if (isEmpty(&ready_queue)) {
-
-            printf("%d\tIdle\t\t", current_time);
-            display_queue(&ready_queue);
-            printf("\n");
-            current_time++;
-            idle_time++;
-        } else {
-
-            sort_queue(&ready_queue, compare_burst);
-
-            Process current_process = ready_queue.data[ready_queue.front];
-
-            start_time = current_time;
-            printf("%d\tStarted P%s\t", current_time, current_process.id);
-            display_queue(&ready_queue);
-            printf("\n");
-            dequeue(&ready_queue);
-            current_time += current_process.burst_time;
-
-            for (int j = 0; j < num_processes; j++) {
-                if (strcmp(processes[j].id, current_process.id) == 0) {
-                    processes[j].completion_time = current_time;
-                    processes[j].turnaround_time = current_time - processes[j].arrival_time;
-                    processes[j].waiting_time = processes[j].turnaround_time - processes[j].burst_time;
-                    processes[j].response_time = start_time - processes[j].arrival_time;
-                    processes[j].start_time = start_time;
-                    break;
-                }
-            }
-
-            while (i < num_processes && processes[i].arrival_time <= current_time) {
-                enqueue(&ready_queue, processes[i]);
-                i++;
-            }
-
-            printf("%d\tCompleted P%s\t", current_time, current_process.id);
-            display_queue(&ready_queue);
-            printf("\n");
-        }
+void simulate_priority(Process processes[], int num_processes, Options *options, FILE *fp) {
+    
+    FILE *output = stdout;
+    if (options->output_file[0] != '\0') {
+        output = fopen(options->output_file, "w");
     }
-
-    printf("---------------------------------------\n");
-    printf("Simulation complete.\n\n");
-
-    qsort(processes, num_processes, sizeof(Process), compare_completion);
-
-    display_metrics(processes, num_processes, idle_time, current_time);
-
-    display_chart(processes, num_processes);
-
-}
-
-void simulate_priority_to_stdout(Process processes[], int num_processes) {
 
     CircularQueue ready_queue;
     init_queue(&ready_queue);
@@ -351,7 +202,7 @@ void simulate_priority_to_stdout(Process processes[], int num_processes) {
         if (isEmpty(&ready_queue)) {
 
             printf("%d\tIdle\t\t", current_time);
-            display_queue(&ready_queue);
+            display_queue(&ready_queue, fp);
             printf("\n");
             current_time++;
             idle_time++;
@@ -363,7 +214,7 @@ void simulate_priority_to_stdout(Process processes[], int num_processes) {
 
             start_time = current_time;
             printf("%d\tStarted P%s\t", current_time, current_process.id);
-            display_queue(&ready_queue);
+            display_queue(&ready_queue, fp);
             printf("\n");
             dequeue(&ready_queue);
             current_time += current_process.burst_time;
@@ -385,7 +236,7 @@ void simulate_priority_to_stdout(Process processes[], int num_processes) {
             }
 
             printf("%d\tCompleted P%s\t", current_time, current_process.id);
-            display_queue(&ready_queue);
+            display_queue(&ready_queue, fp);
             printf("\n");
         }
     }
@@ -395,84 +246,10 @@ void simulate_priority_to_stdout(Process processes[], int num_processes) {
 
     qsort(processes, num_processes, sizeof(Process), compare_completion);
 
-    display_metrics(processes, num_processes, idle_time, current_time);
+    display_metrics(processes, num_processes, idle_time, current_time, fp);
 
-    display_chart(processes, num_processes);
-}
+    display_chart(processes, num_processes, fp);
 
-/* TODO */
-void simulate_priority_to_file(Process processes[], int num_processes, Options *options) {
-    CircularQueue ready_queue;
-    init_queue(&ready_queue);
-
-    int current_time = 0;
-    int idle_time = 0;
-    int start_time;
-
-    printf("\nRunning Simulation for Priority Scheduling\n\n");
-    qsort(processes, num_processes, sizeof(Process), compare_arrival);
-
-    printf("\n\nTime\tEvent\t\tReady Queue\n");
-    printf("---------------------------------------\n");
-
-    int i = 0;
-    while (i < num_processes || !isEmpty(&ready_queue)) {
-
-        while (i < num_processes && processes[i].arrival_time <= current_time) {
-            enqueue(&ready_queue, processes[i]);
-            i++;
-        }
-
-        if (isEmpty(&ready_queue)) {
-
-            printf("%d\tIdle\t\t", current_time);
-            display_queue(&ready_queue);
-            printf("\n");
-            current_time++;
-            idle_time++;
-        } else {
-
-            sort_queue(&ready_queue, compare_priority);
-
-            Process current_process = ready_queue.data[ready_queue.front];
-
-            start_time = current_time;
-            printf("%d\tStarted P%s\t", current_time, current_process.id);
-            display_queue(&ready_queue);
-            printf("\n");
-            dequeue(&ready_queue);
-            current_time += current_process.burst_time;
-
-            for (int j = 0; j < num_processes; j++) {
-                if (strcmp(processes[j].id, current_process.id) == 0) {
-                    processes[j].completion_time = current_time;
-                    processes[j].turnaround_time = current_time - processes[j].arrival_time;
-                    processes[j].waiting_time = processes[j].turnaround_time - processes[j].burst_time;
-                    processes[j].response_time = start_time - processes[j].arrival_time;
-                    processes[j].start_time = start_time;
-                    break;
-                }
-            }
-
-            while (i < num_processes && processes[i].arrival_time <= current_time) {
-                enqueue(&ready_queue, processes[i]);
-                i++;
-            }
-
-            printf("%d\tCompleted P%s\t", current_time, current_process.id);
-            display_queue(&ready_queue);
-            printf("\n");
-        }
-    }
-
-    printf("---------------------------------------\n");
-    printf("Simulation complete.\n\n");
-
-    qsort(processes, num_processes, sizeof(Process), compare_completion);
-
-    display_metrics(processes, num_processes, idle_time, current_time);
-
-    display_chart(processes, num_processes);
 }
 
 void sort_queue(CircularQueue *queue, int (*compare)(const void *, const void *)) {
@@ -494,14 +271,14 @@ void sort_queue(CircularQueue *queue, int (*compare)(const void *, const void *)
     }
 }
 
-void display_metrics(Process processes[], int num_processes, int idle_time, int current_time) {
+void display_metrics(Process processes[], int num_processes, int idle_time, int current_time, FILE *fp) {
     int total_waiting = 0;
     int total_turnaround = 0;
     int total_response = 0; 
     int total_completion = current_time;
 
     for (int i = 0; i < num_processes; i++) {
-        printf("Metrics for P%s: Turnaround= %d, Waiting= %d, Response= %d\n",
+        fprintf(fp, "Metrics for P%s: Turnaround= %d, Waiting= %d, Response= %d\n",
                 processes[i].id,
                 processes[i].turnaround_time,
                 processes[i].waiting_time,
@@ -520,16 +297,16 @@ void display_metrics(Process processes[], int num_processes, int idle_time, int 
     float throughput = (float)num_processes / total_completion;
     float cpu_utilization = (total_completion - idle_time) / (float)total_completion * 100;
 
-    printf("\nMetrics Summary:\n");
-    printf("Average Waiting Time: %.2f\n", avg_waiting);
-    printf("Average Turnaround Time: %.2f\n", avg_turnaround);
-    printf("Average Response Time: %.2f\n", avg_response);
-    printf("Throughput: %.2f processes per time unit\n", throughput);
-    printf("CPU Utilization: %.2f%%\n", cpu_utilization);
+    fprintf(fp, "\nMetrics Summary:\n");
+    fprintf(fp, "Average Waiting Time: %.2f\n", avg_waiting);
+    fprintf(fp, "Average Turnaround Time: %.2f\n", avg_turnaround);
+    fprintf(fp, "Average Response Time: %.2f\n", avg_response);
+    fprintf(fp, "Throughput: %.2f processes per time unit\n", throughput);
+    fprintf(fp, "CPU Utilization: %.2f%%\n", cpu_utilization);
 }
 
 
-void display_chart(Process processes[], int num_processes) {
+void display_chart(Process processes[], int num_processes, FILE *fp) {
 
     int max_time = 0;
     int current_time = 0;
@@ -540,19 +317,19 @@ void display_chart(Process processes[], int num_processes) {
         }
     }
 
-    printf("\nGantt Chart:\n");
-    printf(ANSI_BOLD ANSI_BLUE "--------------------------------------------" ANSI_RESET "\n");
+    fprintf(fp, "\nGantt Chart:\n");
+    fprintf(fp, ANSI_BOLD ANSI_BLUE "--------------------------------------------" ANSI_RESET "\n");
 
     for (int start = 0; start <= max_time; start += MAX_WIDTH) {
 
         int end = (start + MAX_WIDTH - 1 < max_time) ? start + MAX_WIDTH - 1 : max_time;
 
         
-        printf(ANSI_BOLD ANSI_BLUE "Time: " ANSI_RESET);
+        fprintf(fp, ANSI_BOLD ANSI_BLUE "Time: " ANSI_RESET);
         for (int t = start; t <= end; t++) {
-            printf(ANSI_BOLD ANSI_BLUE "%-4d" ANSI_RESET, t);  
+            fprintf(fp, ANSI_BOLD ANSI_BLUE "%-4d" ANSI_RESET, t);  
         }
-        printf("\n");
+        fprintf(fp, "\n");
 
         
         for (int i = 0; i < num_processes; i++) {
@@ -564,22 +341,22 @@ void display_chart(Process processes[], int num_processes) {
                 case 3: color = ANSI_BLUE; break;
                 case 4: color = ANSI_MAGENTA; break;
             }
-            printf("%sP%-2s| " ANSI_RESET, color, processes[i].id);  
+            fprintf(fp, "%sP%-2s| " ANSI_RESET, color, processes[i].id);  
 
             for (int j = start; j <= end; j++) {
                 if (j >= processes[i].start_time && j <= processes[i].completion_time) {
                     
-                    printf("%s### " ANSI_RESET, color); 
+                    fprintf(fp, "%s### " ANSI_RESET, color); 
                     
                 } else {
-                    printf("    "); 
+                    fprintf(fp, "    "); 
                 }
                 current_time++;
             }
-            printf("\n");
+            fprintf(fp, "\n");
         }
 
-        printf(ANSI_BOLD ANSI_BLUE "--------------------------------------------" ANSI_RESET "\n");
+        fprintf(fp, ANSI_BOLD ANSI_BLUE "--------------------------------------------" ANSI_RESET "\n");
     }
 }
 
