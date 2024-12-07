@@ -47,6 +47,7 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options) {
     qsort(processes, num_processes, sizeof(Process), compare_arrival);
 
     fprintf(stdout, "~~~~~~~~~~\n\n");
+    fprintf(stdout, "\nRunning Simulation for FCFS (First Come First Served)\n\n");
     fprintf(stdout, "+---------+---------------------+---------------------------\n");
     fprintf(stdout, "| %-8s| %-20s| %-40s", "Time", "Event", "Ready Queue");
     fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
@@ -64,9 +65,8 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options) {
         if (isEmpty(&ready_queue)) {
 
             fprintf(stdout, "| %-8d| %-20s| ", current_time, "Idle");
-
             display_queue(&ready_queue);
-            printf("\n");
+            fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
             while(isEmpty(&ready_queue)){
                 current_time++;
                 idle_time++;
@@ -84,8 +84,7 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options) {
             start_time = current_time;
             fprintf(stdout, "| %-8d| Started P%-11s| ", current_time, current_process.id);
             display_queue(&ready_queue);
-            fprintf(stdout, "\n");
-
+            fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
             dequeue(&ready_queue);
             /*Update current time and current processes metrics*/
             current_time += current_process.burst_time;
@@ -108,23 +107,23 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options) {
                 i++;
             }
 
-            //fprintf(fp, "%d\tCompleted P%s\t", current_time, current_process.id);
             fprintf(stdout, "| %-8d| Completed P%-9s| ", current_time, current_process.id);
             display_queue(&ready_queue);
-            fprintf(stdout, "\n");
+            fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
 
         }
     }
 
-    fprintf(stdout, "+---------+---------------------+---------------------------\n");
-    printf("Simulation complete.");
+    fprintf(stdout, "\nSimulation complete.");
     fprintf(stdout, "\n\n~~~~~~~~~~\n\n");
 
     qsort(processes, num_processes, sizeof(Process), compare_completion);
 
-    display_metrics(processes, num_processes, idle_time, current_time);
+    // display_metrics(processes, num_processes, idle_time, current_time);
+    display_metrics_table(processes, num_processes, idle_time, current_time);
     fprintf(stdout, "\n~~~~~~~~~~\n");
 
+    //if stdout is going to tty, print asci colours, else don't
     isatty(fileno(stdout)) ?
     display_chart(processes, num_processes) :
     display_chart_file(processes, num_processes);
@@ -163,11 +162,13 @@ void simulate_SJF(Process processes[], int num_processes, Options *options) {
     int idle_time = 0;
     int start_time;
 
-    printf("\nRunning Simulation for SJF (Shortest Job First)\n\n");
     qsort(processes, num_processes, sizeof(Process), compare_arrival);
 
-    printf("\n\nTime\tEvent\t\tReady Queue\n");
-    printf("---------------------------------------\n");
+    fprintf(stdout, "~~~~~~~~~~\n\n");
+    fprintf(stdout, "\nRunning Simulation for SJF (Shortest Job First)\n\n");
+    fprintf(stdout, "+---------+---------------------+---------------------------\n");
+    fprintf(stdout, "| %-8s| %-20s| %-40s", "Time", "Event", "Ready Queue");
+    fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
 
     int i = 0;
     while (i < num_processes || !isEmpty(&ready_queue)) {
@@ -179,9 +180,9 @@ void simulate_SJF(Process processes[], int num_processes, Options *options) {
 
         if (isEmpty(&ready_queue)) {
 
-            printf("%d\tIdle\t\t", current_time);
+            fprintf(stdout, "| %-8d| %-20s| ", current_time, "Idle");
             display_queue(&ready_queue);
-            printf("\n");
+            fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
             while(isEmpty(&ready_queue)){
                 current_time++;
                 idle_time++;
@@ -199,9 +200,11 @@ void simulate_SJF(Process processes[], int num_processes, Options *options) {
             Process current_process = ready_queue.data[ready_queue.front];
 
             start_time = current_time;
-            printf("%d\tStarted P%s\t", current_time, current_process.id);
+            fprintf(stdout, "| %-8d| Started P%-11s| ", current_time, current_process.id);
             display_queue(&ready_queue);
-            printf("\n");
+            
+            fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
+            
             dequeue(&ready_queue);
             current_time += current_process.burst_time;
 
@@ -221,20 +224,25 @@ void simulate_SJF(Process processes[], int num_processes, Options *options) {
                 i++;
             }
 
-            printf("%d\tCompleted P%s\t", current_time, current_process.id);
+            fprintf(stdout, "| %-8d| Completed P%-9s| ", current_time, current_process.id);
             display_queue(&ready_queue);
-            printf("\n");
+            fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
         }
     }
 
-    printf("---------------------------------------\n");
-    printf("Simulation complete.\n\n");
+    fprintf(stdout, "\nSimulation complete.");
+    fprintf(stdout, "\n\n~~~~~~~~~~\n\n");
 
     qsort(processes, num_processes, sizeof(Process), compare_completion);
 
-    display_metrics(processes, num_processes, idle_time, current_time);
+    display_metrics_table(processes, num_processes, idle_time, current_time);
+    fprintf(stdout, "\n~~~~~~~~~~\n");
 
-    display_chart(processes, num_processes);
+    //if stdout is going to tty, print asci colours, else don't
+    isatty(fileno(stdout)) ?
+    display_chart(processes, num_processes) :
+    display_chart_file(processes, num_processes);
+    fprintf(stdout, "\n~~~~~~~~~~\n");
 
 }
 
@@ -260,11 +268,6 @@ void simulate_SJF(Process processes[], int num_processes, Options *options) {
 /
 ------------------------------------------------------------------------*/
 void simulate_priority(Process processes[], int num_processes, Options *options) {
-    
-    FILE *output = stdout;
-    if (options->output_file[0] != '\0') {
-        output = fopen(options->output_file, "w");
-    }
 
     CircularQueue ready_queue;
     init_queue(&ready_queue);
@@ -273,11 +276,13 @@ void simulate_priority(Process processes[], int num_processes, Options *options)
     int idle_time = 0;
     int start_time;
 
-    printf("\nRunning Simulation for Priority Scheduling\n\n");
     qsort(processes, num_processes, sizeof(Process), compare_arrival);
 
-    printf("\n\nTime\tEvent\t\tReady Queue\n");
-    printf("---------------------------------------\n");
+    fprintf(stdout, "~~~~~~~~~~\n\n");
+    fprintf(stdout, "\nRunning Simulation for Priority Scheduling\n\n");
+    fprintf(stdout, "+---------+---------------------+---------------------------\n");
+    fprintf(stdout, "| %-8s| %-20s| %-40s", "Time", "Event", "Ready Queue");
+    fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
 
     int i = 0;
     while (i < num_processes || !isEmpty(&ready_queue)) {
@@ -289,9 +294,9 @@ void simulate_priority(Process processes[], int num_processes, Options *options)
 
         if (isEmpty(&ready_queue)) {
 
-            printf("%d\tIdle\t\t", current_time);
+            fprintf(stdout, "| %-8d| %-20s| ", current_time, "Idle");
             display_queue(&ready_queue);
-            printf("\n");
+            fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
             while(isEmpty(&ready_queue)){
                 current_time++;
                 idle_time++;
@@ -309,9 +314,9 @@ void simulate_priority(Process processes[], int num_processes, Options *options)
             Process current_process = ready_queue.data[ready_queue.front];
 
             start_time = current_time;
-            printf("%d\tStarted P%s\t", current_time, current_process.id);
+            fprintf(stdout, "| %-8d| Started P%-11s| ", current_time, current_process.id);
             display_queue(&ready_queue);
-            printf("\n");
+            fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
             dequeue(&ready_queue);
             current_time += current_process.burst_time;
 
@@ -331,20 +336,26 @@ void simulate_priority(Process processes[], int num_processes, Options *options)
                 i++;
             }
 
-            printf("%d\tCompleted P%s\t", current_time, current_process.id);
+            fprintf(stdout, "| %-8d| Completed P%-9s| ", current_time, current_process.id);
             display_queue(&ready_queue);
-            printf("\n");
+            fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
         }
     }
 
-    printf("---------------------------------------\n");
-    printf("Simulation complete.\n\n");
+    fprintf(stdout, "\nSimulation complete.");
+    fprintf(stdout, "\n\n~~~~~~~~~~\n\n");
 
     qsort(processes, num_processes, sizeof(Process), compare_completion);
+    
+    // display_metrics(processes, num_processes, idle_time, current_time);
+    display_metrics_table(processes, num_processes, idle_time, current_time);
+    fprintf(stdout, "\n~~~~~~~~~~\n");
 
-    display_metrics(processes, num_processes, idle_time, current_time);
-
-    display_chart(processes, num_processes);
+    //if stdout is going to tty, print asci colours, else don't
+    isatty(fileno(stdout)) ?
+    display_chart(processes, num_processes) :
+    display_chart_file(processes, num_processes);
+    fprintf(stdout, "\n~~~~~~~~~~\n");
 
 }
 
@@ -382,9 +393,11 @@ void simulate_SRTF(Process processes[], int num_processes) {
     
     qsort(processes, num_processes, sizeof(Process), compare_arrival);
 
-    printf("\nRunning Simulation for SRTF (Preemptive SJF)\n\n");
-    printf("\n\nTime\tEvent\t\tReady Queue\n");
-    printf("---------------------------------------\n");
+    fprintf(stdout, "~~~~~~~~~~\n\n");
+    fprintf(stdout, "\nRunning Simulation for FCFS (First Come First Served)\n\n");
+    fprintf(stdout, "+---------+---------------------+---------------------------\n");
+    fprintf(stdout, "| %-8s| %-20s| %-40s", "Time", "Event", "Ready Queue");
+    fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
 
     int i = 0;
     while (i < num_processes || !isEmpty(&ready_queue)) {
@@ -395,9 +408,9 @@ void simulate_SRTF(Process processes[], int num_processes) {
         }
 
         if (isEmpty(&ready_queue)) {
-            printf("%d\tIdle\t\t", current_time);
+            fprintf(stdout, "| %-8d| %-20s| ", current_time, "Idle");
             display_queue(&ready_queue);
-            printf("\n");
+            fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
             while(isEmpty(&ready_queue)){
                 current_time++;
                 idle_time++;
@@ -416,9 +429,9 @@ void simulate_SRTF(Process processes[], int num_processes) {
             Process *current_process = &ready_queue.data[ready_queue.front];
 
             if (strcmp(last_process_id, current_process->id) != 0) {
-                printf("%d\tStarted P%s\t", current_time, current_process->id);
+                fprintf(stdout, "| %-8d| Started P%-11s| ", current_time, current_process->id);
                 display_queue(&ready_queue);
-                printf("\n");
+                fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
 
                 if(!idled){
 
@@ -452,9 +465,9 @@ void simulate_SRTF(Process processes[], int num_processes) {
             
             if (current_process->remaining_time == 0) {
                 dequeue(&ready_queue);
-                printf("%d\tCompleted P%s\t", current_time, current_process->id);
+                fprintf(stdout, "| %-8d| Completed P%-9s| ", current_time, current_process->id);
                 display_queue(&ready_queue);
-                printf("\n");
+                fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
 
                 
                 for (int j = 0; j < num_processes; j++) {
@@ -478,13 +491,20 @@ void simulate_SRTF(Process processes[], int num_processes) {
         }
     }
 
-    printf("---------------------------------------\n");
-    printf("Simulation complete.\n\n");
+    fprintf(stdout, "\nSimulation complete.");
+    fprintf(stdout, "\n\n~~~~~~~~~~\n\n");
 
     qsort(processes, num_processes, sizeof(Process), compare_completion);
-    display_metrics(processes, num_processes, idle_time, current_time);
-    qsort(processes, num_processes, sizeof(Process), compare_arrival);
-    display_preemptive_chart(processes, num_processes);
+
+    // display_metrics(processes, num_processes, idle_time, current_time);
+    display_metrics_table(processes, num_processes, idle_time, current_time);
+    fprintf(stdout, "\n~~~~~~~~~~\n");
+
+    //if stdout is going to tty, print asci colours, else don't
+    isatty(fileno(stdout)) ?
+    display_chart(processes, num_processes) :
+    display_chart_file(processes, num_processes);
+    fprintf(stdout, "\n~~~~~~~~~~\n");
 }
 
 
@@ -523,9 +543,11 @@ void simulate_preemptive_priority(Process processes[], int num_processes) {
 
     qsort(processes, num_processes, sizeof(Process), compare_arrival);
 
-    printf("\nRunning Simulation for Preemptive Priority\n\n");
-    printf("\n\nTime\tEvent\t\tReady Queue\n");
-    printf("---------------------------------------\n");
+    fprintf(stdout, "~~~~~~~~~~\n\n");
+    fprintf(stdout, "\nRunning Simulation for FCFS (First Come First Served)\n\n");
+    fprintf(stdout, "+---------+---------------------+---------------------------\n");
+    fprintf(stdout, "| %-8s| %-20s| %-40s", "Time", "Event", "Ready Queue");
+    fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
 
     int i = 0;
     while (i < num_processes || !isEmpty(&ready_queue)) {
@@ -536,9 +558,9 @@ void simulate_preemptive_priority(Process processes[], int num_processes) {
         }
 
         if (isEmpty(&ready_queue)) {
-            printf("%d\tIdle\t\t", current_time);
+            fprintf(stdout, "| %-8d| %-20s| ", current_time, "Idle");
             display_queue(&ready_queue);
-            printf("\n");
+            fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
             while(isEmpty(&ready_queue)){
                 current_time++;
                 idle_time++;
@@ -559,9 +581,9 @@ void simulate_preemptive_priority(Process processes[], int num_processes) {
 
             if (strcmp(last_process_id, current_process->id) != 0) {
                 
-                printf("%d\tStarted P%s\t", current_time, current_process->id);
+                fprintf(stdout, "| %-8d| Started P%-11s| ", current_time, current_process->id);
                 display_queue(&ready_queue);
-                printf("\n");
+                fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
 
                 if(!idled){
 
@@ -595,9 +617,9 @@ void simulate_preemptive_priority(Process processes[], int num_processes) {
             
             if (current_process->remaining_time == 0) {
                 dequeue(&ready_queue);
-                printf("%d\tCompleted P%s\t", current_time, current_process->id);
+                fprintf(stdout, "| %-8d| Completed P%-9s| ", current_time, current_process->id);
                 display_queue(&ready_queue);
-                printf("\n");
+                fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
 
                 
                 for (int j = 0; j < num_processes; j++) {
@@ -623,13 +645,20 @@ void simulate_preemptive_priority(Process processes[], int num_processes) {
         }
     }
 
-    printf("---------------------------------------\n");
-    printf("Simulation complete.\n\n");
+    fprintf(stdout, "\nSimulation complete.");
+    fprintf(stdout, "\n\n~~~~~~~~~~\n\n");
 
     qsort(processes, num_processes, sizeof(Process), compare_completion);
-    display_metrics(processes, num_processes, idle_time, current_time);
-    qsort(processes, num_processes, sizeof(Process), compare_arrival);
-    display_preemptive_chart(processes, num_processes);
+
+    // display_metrics(processes, num_processes, idle_time, current_time);
+    display_metrics_table(processes, num_processes, idle_time, current_time);
+    fprintf(stdout, "\n~~~~~~~~~~\n");
+
+    //if stdout is going to tty, print asci colours, else don't
+    isatty(fileno(stdout)) ?
+    display_chart(processes, num_processes) :
+    display_chart_file(processes, num_processes);
+    fprintf(stdout, "\n~~~~~~~~~~\n");
 }
 
 /*---------- FUNCTION: simulate_round_robin ----------------------------
@@ -665,11 +694,13 @@ void simulate_round_robin(Process processes[], int num_processes, int time_quant
     int idling = 0;
     char last_process_id[10] = "";
 
-    printf("\nRunning Simulation for Round Robin Scheduling\n\n");
     qsort(processes, num_processes, sizeof(Process), compare_arrival); 
 
-    printf("\n\nTime\tEvent\t\tReady Queue\n");
-    printf("---------------------------------------\n");
+    fprintf(stdout, "~~~~~~~~~~\n\n");
+    fprintf(stdout, "\nRunning Simulation for FCFS (First Come First Served)\n\n");
+    fprintf(stdout, "+---------+---------------------+---------------------------\n");
+    fprintf(stdout, "| %-8s| %-20s| %-40s", "Time", "Event", "Ready Queue");
+    fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
 
     while (i < num_processes || !isEmpty(&ready_queue)) {
 
@@ -681,9 +712,9 @@ void simulate_round_robin(Process processes[], int num_processes, int time_quant
 
         if (isEmpty(&ready_queue)) {  
 
-            printf("%d\tIdle\t\t", current_time);
+            fprintf(stdout, "| %-8d| %-20s| ", current_time, "Idle");
             display_queue(&ready_queue);
-            printf("\n");
+            fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
             while(isEmpty(&ready_queue)){
                 current_time++;
                 idle_time++;
@@ -715,9 +746,9 @@ void simulate_round_robin(Process processes[], int num_processes, int time_quant
 
             if(strcmp(current_process.id, last_process_id) != 0){
 
-                printf("%d\tStarted P%s\t", current_time, current_process.id);
+                fprintf(stdout, "| %-8d| Started P%-11s| ", current_time, current_process.id);
                 display_queue(&ready_queue);
-                printf("\n");
+                fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
                 strcpy(last_process_id, current_process.id);
 
             }
@@ -762,17 +793,23 @@ void simulate_round_robin(Process processes[], int num_processes, int time_quant
                         break;
                     }
                 }
-                printf("%d\tCompleted P%s\t", current_time, current_process.id);
+                fprintf(stdout, "| %-8d| Completed P%-9s| ", current_time, current_process.id);
                 display_queue(&ready_queue);
-                printf("\n");
+                fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
             }
         }
     }
 
-    printf("---------------------------------------\n");
-    printf("Simulation complete.\n\n");
+    fprintf(stdout, "\nSimulation complete.");
+    fprintf(stdout, "\n\n~~~~~~~~~~\n\n");
 
+    // display_metrics(processes, num_processes, idle_time, current_time);
+    display_metrics_table(processes, num_processes, idle_time, current_time);
+    fprintf(stdout, "\n~~~~~~~~~~\n");
 
-    display_metrics(processes, num_processes, idle_time, current_time);
-    display_preemptive_chart(processes, num_processes);
+    //if stdout is going to tty, print asci colours, else don't
+    isatty(fileno(stdout)) ?
+    display_chart(processes, num_processes) :
+    display_chart_file(processes, num_processes);
+    fprintf(stdout, "\n~~~~~~~~~~\n");
 }

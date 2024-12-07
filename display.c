@@ -20,6 +20,7 @@
 #include "circular_queue.h"
 #include "ansi_esc_seqs.h"
 #include "options.h"
+#include "compare.h"
 
 /*---------- FUNCTION: display_metrics --------------------------------
 /  Function Description:
@@ -77,6 +78,49 @@ void display_metrics(Process processes[], int num_processes, int idle_time, int 
     fprintf(stdout, "CPU Utilization: %.2f%%\n", cpu_utilization);
 }
 
+void display_metrics_table(Process processes[], int num_processes, int idle_time, int current_time) {
+    int total_waiting = 0;
+    int total_turnaround = 0;
+    int total_response = 0; 
+    int total_completion = current_time;
+    char pid[11];
+
+    qsort(processes, num_processes, sizeof(Process), compare_pid); 
+
+    fprintf(stdout, "Table of Metrics Values:");
+    fprintf(stdout, "\n+-------+-------+-------+-------+\n");
+    fprintf(stdout, "|  PID  | Turn. | Wait. | Resp. |");
+    fprintf(stdout, "\n+-------+-------+-------+-------+\n");
+    for (int i = 0; i < num_processes; i++) {
+        sprintf(pid, "P%s", processes[i].id);
+        fprintf(stdout, "|  %3s  |   %2d  |   %2d  |   %2d  |\n",
+                pid,
+                processes[i].turnaround_time,
+                processes[i].waiting_time,
+                processes[i].response_time);
+        fprintf(stdout, "+-------+-------+-------+-------+\n");
+    }
+
+    for (int i = 0; i < num_processes; i++) {
+        total_waiting += processes[i].waiting_time;
+        total_turnaround += processes[i].turnaround_time;
+        total_response += processes[i].response_time;
+    }
+
+    float avg_waiting = (float)total_waiting / num_processes;
+    float avg_turnaround = (float)total_turnaround / num_processes;
+    float avg_response = (float)total_response / num_processes; 
+    float throughput = (float)num_processes / total_completion;
+    float cpu_utilization = (total_completion - idle_time) / (float)total_completion * 100;
+
+    fprintf(stdout, "\nMetrics Summary:\n");
+    fprintf(stdout, "Average Waiting Time:\n\t%.2f\n", avg_waiting);
+    fprintf(stdout, "Average Turnaround Time:\n\t%.2f\n", avg_turnaround);
+    fprintf(stdout, "Average Response Time:\n\t%.2f\n", avg_response);
+    fprintf(stdout, "Throughput:\n\t%.2f processes per time unit\n", throughput);
+    fprintf(stdout, "CPU Utilization:\n\t%.2f%%\n", cpu_utilization);
+}
+
 
 /*---------- FUNCTION DOCUMENTATION BLOCK ------------------------------
 /  Functions Overview:
@@ -107,7 +151,7 @@ void display_metrics(Process processes[], int num_processes, int idle_time, int 
 /    - No known bugs at this time.
 /  
 /------------------------------------------------------------------------*/
-void display_chart(Process processes[], int num_processes, FILE *fp) {
+void display_chart(Process processes[], int num_processes) {
    
     int max_time = 0;
     int current_time = 0;

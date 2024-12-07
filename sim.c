@@ -144,7 +144,7 @@ void print_scheduling_menu() {
     fprintf(stderr, "4. RR (Round Robin)\n");
     fprintf(stderr, "5. Priority Scheduling\n");
     fprintf(stderr, "6. PP (Preemptive Priority)\n");
-    fprintf(stderr, "\nEnter your choice (1-4): ");
+    fprintf(stderr, "\nEnter your choice (1-6): ");
 }
 
 void run_selected_algorithm(Process processes[], int num_processes, Options *options) {
@@ -230,6 +230,10 @@ int process_input(Process processes[], int choice) {
 int process_file_input(Process processes[], Options *options, int choice) {
 
     int i = 0;
+    char temp_id[10];
+    int unique = 0;
+    char pid[10];
+    int arrival, burst, priority, vals_read;
 
     if (options->input_file[0] == '\0') {
         fprintf(stderr, "Error: no input file.\n");
@@ -237,10 +241,6 @@ int process_file_input(Process processes[], Options *options, int choice) {
     }
 
     while (i < MAX_PROCESSES) {
-        char temp_id[10];
-        int unique = 0;
-        char pid[10];
-        int arrival, burst, priority, vals_read;
 
         if (choice >= 0 && choice < 5) {
             vals_read = fscanf(stdin, "%s %d %d", temp_id, &arrival, &burst);
@@ -260,6 +260,7 @@ int process_file_input(Process processes[], Options *options, int choice) {
                 fprintf(stderr, "Error: ID is taken. Enter a unique ID.\n");
             }
         }
+        unique = 0;
 
         processes[i].arrival_time = arrival;
         processes[i].burst_time = burst;
