@@ -43,7 +43,7 @@ scheduling.o: scheduling.c scheduling.h globals.h process.h circular_queue.h opt
 circular_queue.o: circular_queue.h globals.h process.h options.h
 	$(CC) $(CFLAGS) -c circular_queue.c
 
-display.o: globals.h process.h options.h
+display.o: globals.h process.h options.h compare.h
 	$(CC) $(CFLAGS) -c display.c
 
 compare.o: globals.h process.h options.h

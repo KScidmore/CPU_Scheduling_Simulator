@@ -83,3 +83,13 @@ int compare_priority(const void *a, const void *b) {
     
     return process_a->arrival_time - process_b->arrival_time;
 }
+
+int compare_pid(const void *a, const void *b) {
+    Process *process1 = (Process *)a;
+    Process *process2 = (Process *)b;
+
+    int pid1 = atoi(process1->id);
+    int pid2 = atoi(process2->id);
+
+    return pid1 - pid2;
+}

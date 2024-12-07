@@ -20,6 +20,7 @@
 #include "circular_queue.h"
 #include "ansi_esc_seqs.h"
 #include "options.h"
+#include "compare.h"
 
 /*---------- FUNCTION: display_metrics --------------------------------
 /  Function Description:
@@ -83,6 +84,8 @@ void display_metrics_table(Process processes[], int num_processes, int idle_time
     int total_response = 0; 
     int total_completion = current_time;
     char pid[11];
+
+    qsort(processes, num_processes, sizeof(Process), compare_pid); 
 
     fprintf(stdout, "Table of Metrics Values:");
     fprintf(stdout, "\n+-------+-------+-------+-------+\n");
