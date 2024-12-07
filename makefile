@@ -11,7 +11,7 @@
 #--------- Variable declarations ---------------------------
 # executable and object files 
 EXE=sim
-OBJECTS=sim.o scheduling.o circular_queue.o
+OBJECTS=sim.o scheduling.o circular_queue.o display.o compare.o
 
 # C compiler stuff
 CC=gcc		# C compiler program
@@ -33,19 +33,20 @@ $(EXE): $(OBJECTS)
 clean:
 	rm -f *.o $(EXE) circ 
 
-# temp target 
-circ: circular_queue.o
-	$(CC) circular_queue.o -o circ
-
-
 #--------- Creating Object Files --------------------------- 
 sim.o: sim.c sim.h globals.h process.h options.h
 	$(CC) $(CFLAGS) -c sim.c 
 
-scheduling.o: scheduling.c scheduling.h globals.h process.h circular_queue.h options.h
+scheduling.o: scheduling.c scheduling.h globals.h process.h circular_queue.h options.h compare.h display.h
 	$(CC) $(CFLAGS) -c scheduling.c 
 
 circular_queue.o: circular_queue.h globals.h process.h options.h
-	$(CC) $(CFLAGS) -c circular_queue.c 
+	$(CC) $(CFLAGS) -c circular_queue.c
+
+display.o: globals.h process.h options.h
+	$(CC) $(CFLAGS) -c display.c
+
+compare.o: globals.h process.h options.h
+	$(CC) $(CFLAGS) -c compare.c 
 
 # The empty line above this comment must remain to avoid errors

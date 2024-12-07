@@ -26,5 +26,6 @@ int isFull(CircularQueue *queue);
 void enqueue(CircularQueue *queue, Process process);
 Process dequeue(CircularQueue *queue);
 void display_queue(CircularQueue *queue, FILE *fp);
+void sort_queue(CircularQueue *queue, int (*compare)(const void *, const void *));
 
 #endif
