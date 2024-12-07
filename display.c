@@ -39,14 +39,14 @@
 /      * CPU Utilization (%) = (Total CPU time / total completion time) * 100
 /
 ------------------------------------------------------------------------*/
-void display_metrics(Process processes[], int num_processes, int idle_time, int current_time, FILE *fp) {
+void display_metrics(Process processes[], int num_processes, int idle_time, int current_time) {
     int total_waiting = 0;
     int total_turnaround = 0;
     int total_response = 0; 
     int total_completion = current_time;
 
     for (int i = 0; i < num_processes; i++) {
-        fprintf(fp, "Metrics for P%s: Turnaround= %d, Waiting= %d, Response= %d\n",
+        fprintf(stdout, "Metrics for P%s: Turnaround= %d, Waiting= %d, Response= %d\n",
                 processes[i].id,
                 processes[i].turnaround_time,
                 processes[i].waiting_time,
@@ -65,16 +65,16 @@ void display_metrics(Process processes[], int num_processes, int idle_time, int 
     float throughput = (float)num_processes / total_completion;
     float cpu_utilization = (total_completion - idle_time) / (float)total_completion * 100;
 
-    fprintf(fp, "\nMetrics Summary:\n");
-    fprintf(fp, "Average Waiting Time: %.2f\n", avg_waiting);
-    fprintf(fp, "Average Turnaround Time: %.2f\n", avg_turnaround);
-    fprintf(fp, "Average Response Time: %.2f\n", avg_response);
-    fprintf(fp, "Throughput: %.2f processes per time unit\n", throughput);
-    fprintf(fp, "CPU Utilization: %.2f%%\n", cpu_utilization);
+    fprintf(stdout, "\nMetrics Summary:\n");
+    fprintf(stdout, "Average Waiting Time: %.2f\n", avg_waiting);
+    fprintf(stdout, "Average Turnaround Time: %.2f\n", avg_turnaround);
+    fprintf(stdout, "Average Response Time: %.2f\n", avg_response);
+    fprintf(stdout, "Throughput: %.2f processes per time unit\n", throughput);
+    fprintf(stdout, "CPU Utilization: %.2f%%\n", cpu_utilization);
 }
 
 
-void display_chart(Process processes[], int num_processes, FILE *fp) {
+void display_chart(Process processes[], int num_processes) {
    
     int max_time = 0;
     int current_time = 0;
@@ -85,19 +85,19 @@ void display_chart(Process processes[], int num_processes, FILE *fp) {
         }
     }
 
-    fprintf(fp, "\nGantt Chart:\n");
-    fprintf(fp, ANSI_BOLD ANSI_BLUE "--------------------------------------------" ANSI_RESET "\n");
+    fprintf(stdout, "\nGantt Chart:\n");
+    fprintf(stdout, ANSI_BOLD ANSI_BLUE "--------------------------------------------" ANSI_RESET "\n");
 
     for (int start = 0; start <= max_time; start += MAX_WIDTH) {
 
         int end = (start + MAX_WIDTH - 1 < max_time) ? start + MAX_WIDTH - 1 : max_time;
 
         
-        fprintf(fp, ANSI_BOLD ANSI_BLUE "Time: " ANSI_RESET);
+        fprintf(stdout, ANSI_BOLD ANSI_BLUE "Time: " ANSI_RESET);
         for (int t = start; t <= end; t++) {
-            fprintf(fp, ANSI_BOLD ANSI_BLUE "%-4d" ANSI_RESET, t);  
+            fprintf(stdout, ANSI_BOLD ANSI_BLUE "%-4d" ANSI_RESET, t);  
         }
-        fprintf(fp, "\n");
+        fprintf(stdout, "\n");
 
         
         for (int i = 0; i < num_processes; i++) {
@@ -109,26 +109,26 @@ void display_chart(Process processes[], int num_processes, FILE *fp) {
                 case 3: color = ANSI_BLUE; break;
                 case 4: color = ANSI_MAGENTA; break;
             }
-            fprintf(fp, "%sP%-2s| " ANSI_RESET, color, processes[i].id);  
+            fprintf(stdout, "%sP%-2s| " ANSI_RESET, color, processes[i].id);  
 
             for (int j = start; j <= end; j++) {
                 if (j >= processes[i].start_time && j <= processes[i].completion_time) {
                     
-                    fprintf(fp, "%s### " ANSI_RESET, color); 
+                    fprintf(stdout, "%s### " ANSI_RESET, color); 
                     
                 } else {
-                    fprintf(fp, "    "); 
+                    fprintf(stdout, "    "); 
                 }
                 current_time++;
             }
-            fprintf(fp, "\n");
+            fprintf(stdout, "\n");
         }
 
-        fprintf(fp, ANSI_BOLD ANSI_BLUE "--------------------------------------------" ANSI_RESET "\n");
+        fprintf(stdout, ANSI_BOLD ANSI_BLUE "--------------------------------------------" ANSI_RESET "\n");
     }
 }
 
-void display_chart_file(Process processes[], int num_processes, FILE *fp) {
+void display_chart_file(Process processes[], int num_processes) {
    
     int max_time = 0;
     int current_time = 0;
@@ -139,42 +139,42 @@ void display_chart_file(Process processes[], int num_processes, FILE *fp) {
         }
     }
 
-    fprintf(fp, "\nGantt Chart:\n");
-    fprintf(fp, "--------------------------------------------\n");
+    fprintf(stdout, "\nGantt Chart:\n");
+    fprintf(stdout, "--------------------------------------------\n");
 
     for (int start = 0; start <= max_time; start += MAX_WIDTH) {
 
         int end = (start + MAX_WIDTH - 1 < max_time) ? start + MAX_WIDTH - 1 : max_time;
 
         
-        fprintf(fp, "Time: ");
+        fprintf(stdout, "Time: ");
         for (int t = start; t <= end; t++) {
-            fprintf(fp, "%-4d", t);  
+            fprintf(stdout, "%-4d", t);  
         }
-        fprintf(fp, "\n");
+        fprintf(stdout, "\n");
 
         
         for (int i = 0; i < num_processes; i++) {
-            fprintf(fp, "P%-2s| ", processes[i].id);  
+            fprintf(stdout, "P%-2s| ", processes[i].id);  
 
             for (int j = start; j <= end; j++) {
                 if (j >= processes[i].start_time && j <= processes[i].completion_time) {
                     
-                    fprintf(fp, "### "); 
+                    fprintf(stdout, "### "); 
                     
                 } else {
-                    fprintf(fp, "    "); 
+                    fprintf(stdout, "    "); 
                 }
                 current_time++;
             }
-            fprintf(fp, "\n");
+            fprintf(stdout, "\n");
         }
 
-        fprintf(fp, "--------------------------------------------\n");
+        fprintf(stdout, "--------------------------------------------\n");
     }
 }
 
-void display_preemptive_chart(Process processes[], int num_processes, FILE *fp) {
+void display_preemptive_chart(Process processes[], int num_processes) {
     int max_time = 0;
     int current_time = 0;
     int flag = 0;

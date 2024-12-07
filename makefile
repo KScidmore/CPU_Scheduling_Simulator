@@ -27,7 +27,7 @@ all: clean $(EXE)
 
 # Linking target executable from object files
 $(EXE): $(OBJECTS)
-	$(CC) $(OBJECTS) -o $(EXE)
+	$(CC) $(CLFAGS) $(OBJECTS) -o $(EXE)
 
 # Cleaning up the old object files and executable
 clean:
