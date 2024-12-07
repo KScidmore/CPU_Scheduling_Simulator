@@ -99,6 +99,7 @@ Process dequeue(CircularQueue *queue) {
     }
 }
 
+
 /*---------- FUNCTION: display_queue ------------------------------------
 /  Function Description:
 /    Displays the elements of a circular queue. The function iterates through 
@@ -119,15 +120,15 @@ Process dequeue(CircularQueue *queue) {
 ------------------------------------------------------------------------*/
 void display_queue(CircularQueue *queue, FILE *fp) {
 
-    fprintf(fp, "[");
+    fprintf(stdout, "[");
     if (!isEmpty(queue)) {
         for (int i = 0; i < queue->fill; i++) {
             int index = (queue->front + i) % MAX_PROCESSES;
-            fprintf(fp, "P%s", queue->data[index].id); // Add "P" before the process ID
-            if (i < queue->fill - 1) fprintf(fp, ", ");
+            fprintf(stdout, "P%s", queue->data[index].id); // Add "P" before the process ID
+            if (i < queue->fill - 1) fprintf(stdout, ", ");
         }
     }
-    fprintf(fp, "]");
+    fprintf(stdout, "]");
 }
 
 /*---------- FUNCTION: sort_queue -------------------------------------
@@ -221,7 +222,7 @@ void circ_queue_test_1() {
     printf("Enqueuing an item.\n");
     enqueue(&ready_queue, processes[MAX_PROCESSES - 1]);
     printf("Displaying current queue: ");
-    display_queue(&ready_queue, fp);
+    display_queue(&ready_queue);
     printf("\n\n");
     
     /* check if empty and/or full */
@@ -235,7 +236,7 @@ void circ_queue_test_1() {
     printf("Enqueuing out of top bound.\n");
     enqueue(&ready_queue, processes[MAX_PROCESSES]);
     printf("Displaying current queue: ");
-    display_queue(&ready_queue, fp);
+    display_queue(&ready_queue);
     printf("\n\n");
 
     /* peek at front and rear */
@@ -247,7 +248,7 @@ void circ_queue_test_1() {
         printf("Dequeuing an item.\n");
         dequeue(&ready_queue);
         printf("Displaying current queue: ");
-        display_queue(&ready_queue, fp);
+        display_queue(&ready_queue);
         printf("\n\n");
         /* peek at front and rear */
         peek_front(&ready_queue);

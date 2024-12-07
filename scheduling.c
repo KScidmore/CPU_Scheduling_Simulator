@@ -35,7 +35,7 @@
 /    - 
 /
 -------------------------------------------------------------------------*/
-void simulate_FCFS(Process processes[], int num_processes, Options *options, FILE *fp) {
+void simulate_FCFS(Process processes[], int num_processes, Options *options) {
 
     CircularQueue ready_queue;
     init_queue(&ready_queue);
@@ -46,13 +46,10 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options, FIL
 
     qsort(processes, num_processes, sizeof(Process), compare_arrival);
 
-    fprintf(fp, "~~~~~~~~~~\n\n");
-    //fprintf(fp, "\n\nTime\tEvent\t\tReady Queue\n");
-    //fprintf(fp, "\n\n+---------+---------------------+----------------------------------\n");
-    fprintf(fp, "+---------+---------------------+---------------------------\n");
-    fprintf(fp, "| %-8s| %-20s| %-40s", "Time", "Event", "Ready Queue");
-    fprintf(fp, "\n+---------+---------------------+---------------------------\n");
-    //fprintf(fp, "\n---------------------------------------\n");
+    fprintf(stdout, "~~~~~~~~~~\n\n");
+    fprintf(stdout, "+---------+---------------------+---------------------------\n");
+    fprintf(stdout, "| %-8s| %-20s| %-40s", "Time", "Event", "Ready Queue");
+    fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
 
     int i = 0; 
     while (i < num_processes || !isEmpty(&ready_queue)) {
@@ -66,10 +63,9 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options, FIL
         /*If queue is empty track idle state */
         if (isEmpty(&ready_queue)) {
 
-            //fprintf(fp, "%d\tIdle\t\t", current_time);
-            fprintf(fp, "| %-8d| %-20s| ", current_time, "Idle");
+            fprintf(stdout, "| %-8d| %-20s| ", current_time, "Idle");
 
-            display_queue(&ready_queue, fp);
+            display_queue(&ready_queue);
             printf("\n");
             while(isEmpty(&ready_queue)){
                 current_time++;
@@ -86,10 +82,9 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options, FIL
             Process current_process = ready_queue.data[ready_queue.front];
 
             start_time = current_time;
-            //fprintf(fp, "%d\tStarted P%s\t", current_time, current_process.id);
-            fprintf(fp, "| %-8d| Started P%-11s| ", current_time, current_process.id);
-            display_queue(&ready_queue, fp);
-            fprintf(fp, "\n");
+            fprintf(stdout, "| %-8d| Started P%-11s| ", current_time, current_process.id);
+            display_queue(&ready_queue);
+            fprintf(stdout, "\n");
 
             dequeue(&ready_queue);
             /*Update current time and current processes metrics*/
@@ -114,27 +109,26 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options, FIL
             }
 
             //fprintf(fp, "%d\tCompleted P%s\t", current_time, current_process.id);
-            fprintf(fp, "| %-8d| Completed P%-9s| ", current_time, current_process.id);
-            display_queue(&ready_queue, fp);
-            fprintf(fp, "\n");
+            fprintf(stdout, "| %-8d| Completed P%-9s| ", current_time, current_process.id);
+            display_queue(&ready_queue);
+            fprintf(stdout, "\n");
 
         }
     }
 
-    //printf("---------------------------------------\n");
-    fprintf(fp, "+---------+---------------------+---------------------------\n");
+    fprintf(stdout, "+---------+---------------------+---------------------------\n");
     printf("Simulation complete.");
-    fprintf(fp, "\n\n~~~~~~~~~~\n\n");
+    fprintf(stdout, "\n\n~~~~~~~~~~\n\n");
 
     qsort(processes, num_processes, sizeof(Process), compare_completion);
 
-    display_metrics(processes, num_processes, idle_time, current_time, fp);
-    fprintf(fp, "\n~~~~~~~~~~\n");
+    display_metrics(processes, num_processes, idle_time, current_time);
+    fprintf(stdout, "\n~~~~~~~~~~\n");
 
-    isatty(fileno(fp)) ?
-    display_chart(processes, num_processes, fp) :
-    display_chart_file(processes, num_processes, fp);
-    fprintf(fp, "\n~~~~~~~~~~\n");
+    isatty(fileno(stdout)) ?
+    display_chart(processes, num_processes) :
+    display_chart_file(processes, num_processes);
+    fprintf(stdout, "\n~~~~~~~~~~\n");
 
 }
 
@@ -159,7 +153,7 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options, FIL
 /    - 
 /
 -------------------------------------------------------------------------*/
-void simulate_SJF(Process processes[], int num_processes, Options *options, FILE *fp) {
+void simulate_SJF(Process processes[], int num_processes, Options *options) {
 
 
     CircularQueue ready_queue;
@@ -186,7 +180,7 @@ void simulate_SJF(Process processes[], int num_processes, Options *options, FILE
         if (isEmpty(&ready_queue)) {
 
             printf("%d\tIdle\t\t", current_time);
-            display_queue(&ready_queue, fp);
+            display_queue(&ready_queue);
             printf("\n");
             while(isEmpty(&ready_queue)){
                 current_time++;
@@ -206,7 +200,7 @@ void simulate_SJF(Process processes[], int num_processes, Options *options, FILE
 
             start_time = current_time;
             printf("%d\tStarted P%s\t", current_time, current_process.id);
-            display_queue(&ready_queue, fp);
+            display_queue(&ready_queue);
             printf("\n");
             dequeue(&ready_queue);
             current_time += current_process.burst_time;
@@ -228,7 +222,7 @@ void simulate_SJF(Process processes[], int num_processes, Options *options, FILE
             }
 
             printf("%d\tCompleted P%s\t", current_time, current_process.id);
-            display_queue(&ready_queue, fp);
+            display_queue(&ready_queue);
             printf("\n");
         }
     }
@@ -238,9 +232,9 @@ void simulate_SJF(Process processes[], int num_processes, Options *options, FILE
 
     qsort(processes, num_processes, sizeof(Process), compare_completion);
 
-    display_metrics(processes, num_processes, idle_time, current_time, fp);
+    display_metrics(processes, num_processes, idle_time, current_time);
 
-    display_chart(processes, num_processes, fp);
+    display_chart(processes, num_processes);
 
 }
 
@@ -265,7 +259,7 @@ void simulate_SJF(Process processes[], int num_processes, Options *options, FILE
 /    - 
 /
 ------------------------------------------------------------------------*/
-void simulate_priority(Process processes[], int num_processes, Options *options, FILE *fp) {
+void simulate_priority(Process processes[], int num_processes, Options *options) {
     
     FILE *output = stdout;
     if (options->output_file[0] != '\0') {
@@ -296,7 +290,7 @@ void simulate_priority(Process processes[], int num_processes, Options *options,
         if (isEmpty(&ready_queue)) {
 
             printf("%d\tIdle\t\t", current_time);
-            display_queue(&ready_queue, fp);
+            display_queue(&ready_queue);
             printf("\n");
             while(isEmpty(&ready_queue)){
                 current_time++;
@@ -316,7 +310,7 @@ void simulate_priority(Process processes[], int num_processes, Options *options,
 
             start_time = current_time;
             printf("%d\tStarted P%s\t", current_time, current_process.id);
-            display_queue(&ready_queue, fp);
+            display_queue(&ready_queue);
             printf("\n");
             dequeue(&ready_queue);
             current_time += current_process.burst_time;
@@ -338,7 +332,7 @@ void simulate_priority(Process processes[], int num_processes, Options *options,
             }
 
             printf("%d\tCompleted P%s\t", current_time, current_process.id);
-            display_queue(&ready_queue, fp);
+            display_queue(&ready_queue);
             printf("\n");
         }
     }
@@ -348,9 +342,9 @@ void simulate_priority(Process processes[], int num_processes, Options *options,
 
     qsort(processes, num_processes, sizeof(Process), compare_completion);
 
-    display_metrics(processes, num_processes, idle_time, current_time, fp);
+    display_metrics(processes, num_processes, idle_time, current_time);
 
-    display_chart(processes, num_processes, fp);
+    display_chart(processes, num_processes);
 
 }
 
@@ -375,7 +369,7 @@ void simulate_priority(Process processes[], int num_processes, Options *options,
 /    - 
 /
 -------------------------------------------------------------------------*/
-void simulate_SRTF(Process processes[], int num_processes, FILE *fp) {
+void simulate_SRTF(Process processes[], int num_processes) {
 
     CircularQueue ready_queue;
     init_queue(&ready_queue);
@@ -402,7 +396,7 @@ void simulate_SRTF(Process processes[], int num_processes, FILE *fp) {
 
         if (isEmpty(&ready_queue)) {
             printf("%d\tIdle\t\t", current_time);
-            display_queue(&ready_queue, fp);
+            display_queue(&ready_queue);
             printf("\n");
             while(isEmpty(&ready_queue)){
                 current_time++;
@@ -423,7 +417,7 @@ void simulate_SRTF(Process processes[], int num_processes, FILE *fp) {
 
             if (strcmp(last_process_id, current_process->id) != 0) {
                 printf("%d\tStarted P%s\t", current_time, current_process->id);
-                display_queue(&ready_queue, fp);
+                display_queue(&ready_queue);
                 printf("\n");
 
                 if(!idled){
@@ -459,7 +453,7 @@ void simulate_SRTF(Process processes[], int num_processes, FILE *fp) {
             if (current_process->remaining_time == 0) {
                 dequeue(&ready_queue);
                 printf("%d\tCompleted P%s\t", current_time, current_process->id);
-                display_queue(&ready_queue, fp);
+                display_queue(&ready_queue);
                 printf("\n");
 
                 
@@ -488,9 +482,9 @@ void simulate_SRTF(Process processes[], int num_processes, FILE *fp) {
     printf("Simulation complete.\n\n");
 
     qsort(processes, num_processes, sizeof(Process), compare_completion);
-    display_metrics(processes, num_processes, idle_time, current_time, fp);
+    display_metrics(processes, num_processes, idle_time, current_time);
     qsort(processes, num_processes, sizeof(Process), compare_arrival);
-    display_preemptive_chart(processes, num_processes, fp);
+    display_preemptive_chart(processes, num_processes);
 }
 
 
@@ -515,7 +509,7 @@ void simulate_SRTF(Process processes[], int num_processes, FILE *fp) {
 /    - 
 /
 ---------------------------------------------------------------------------------*/
-void simulate_preemptive_priority(Process processes[], int num_processes, FILE *fp) {
+void simulate_preemptive_priority(Process processes[], int num_processes) {
 
     CircularQueue ready_queue;
     init_queue(&ready_queue);
@@ -543,7 +537,7 @@ void simulate_preemptive_priority(Process processes[], int num_processes, FILE *
 
         if (isEmpty(&ready_queue)) {
             printf("%d\tIdle\t\t", current_time);
-            display_queue(&ready_queue, fp);
+            display_queue(&ready_queue);
             printf("\n");
             while(isEmpty(&ready_queue)){
                 current_time++;
@@ -566,7 +560,7 @@ void simulate_preemptive_priority(Process processes[], int num_processes, FILE *
             if (strcmp(last_process_id, current_process->id) != 0) {
                 
                 printf("%d\tStarted P%s\t", current_time, current_process->id);
-                display_queue(&ready_queue, fp);
+                display_queue(&ready_queue);
                 printf("\n");
 
                 if(!idled){
@@ -602,7 +596,7 @@ void simulate_preemptive_priority(Process processes[], int num_processes, FILE *
             if (current_process->remaining_time == 0) {
                 dequeue(&ready_queue);
                 printf("%d\tCompleted P%s\t", current_time, current_process->id);
-                display_queue(&ready_queue, fp);
+                display_queue(&ready_queue);
                 printf("\n");
 
                 
@@ -633,9 +627,9 @@ void simulate_preemptive_priority(Process processes[], int num_processes, FILE *
     printf("Simulation complete.\n\n");
 
     qsort(processes, num_processes, sizeof(Process), compare_completion);
-    display_metrics(processes, num_processes, idle_time, current_time, fp);
+    display_metrics(processes, num_processes, idle_time, current_time);
     qsort(processes, num_processes, sizeof(Process), compare_arrival);
-    display_preemptive_chart(processes, num_processes, fp);
+    display_preemptive_chart(processes, num_processes);
 }
 
 /*---------- FUNCTION: simulate_round_robin ----------------------------
@@ -660,7 +654,7 @@ void simulate_preemptive_priority(Process processes[], int num_processes, FILE *
 /    - 
 /
 ------------------------------------------------------------------------*/
-void simulate_round_robin(Process processes[], int num_processes, int time_quantum, FILE *fp) {
+void simulate_round_robin(Process processes[], int num_processes, int time_quantum) {
 
     CircularQueue ready_queue;
     init_queue(&ready_queue);
@@ -688,7 +682,7 @@ void simulate_round_robin(Process processes[], int num_processes, int time_quant
         if (isEmpty(&ready_queue)) {  
 
             printf("%d\tIdle\t\t", current_time);
-            display_queue(&ready_queue, fp);
+            display_queue(&ready_queue);
             printf("\n");
             while(isEmpty(&ready_queue)){
                 current_time++;
@@ -722,7 +716,7 @@ void simulate_round_robin(Process processes[], int num_processes, int time_quant
             if(strcmp(current_process.id, last_process_id) != 0){
 
                 printf("%d\tStarted P%s\t", current_time, current_process.id);
-                display_queue(&ready_queue, fp);
+                display_queue(&ready_queue);
                 printf("\n");
                 strcpy(last_process_id, current_process.id);
 
@@ -769,7 +763,7 @@ void simulate_round_robin(Process processes[], int num_processes, int time_quant
                     }
                 }
                 printf("%d\tCompleted P%s\t", current_time, current_process.id);
-                display_queue(&ready_queue, fp);
+                display_queue(&ready_queue);
                 printf("\n");
             }
         }
@@ -779,6 +773,6 @@ void simulate_round_robin(Process processes[], int num_processes, int time_quant
     printf("Simulation complete.\n\n");
 
 
-    display_metrics(processes, num_processes, idle_time, current_time, fp);
-    display_preemptive_chart(processes, num_processes, fp);
+    display_metrics(processes, num_processes, idle_time, current_time);
+    display_preemptive_chart(processes, num_processes);
 }
