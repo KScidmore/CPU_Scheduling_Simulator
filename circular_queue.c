@@ -118,11 +118,15 @@ Process dequeue(CircularQueue *queue) {
 /    - No known bugs at this time
 /
 ------------------------------------------------------------------------*/
-void display_queue(CircularQueue *queue, FILE *fp) {
+void display_queue(CircularQueue *queue) {
 
     fprintf(stdout, "[");
     if (!isEmpty(queue)) {
         for (int i = 0; i < queue->fill; i++) {
+            if (i > 0 && i % 8 == 0) {
+                // print empty row to wrap queue when getting too long
+                printf("\n| %-8s| %-20s| ", "", "");
+            }
             int index = (queue->front + i) % MAX_PROCESSES;
             fprintf(stdout, "P%s", queue->data[index].id); // Add "P" before the process ID
             if (i < queue->fill - 1) fprintf(stdout, ", ");

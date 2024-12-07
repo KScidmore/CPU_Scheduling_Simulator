@@ -64,9 +64,8 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options) {
         if (isEmpty(&ready_queue)) {
 
             fprintf(stdout, "| %-8d| %-20s| ", current_time, "Idle");
-
             display_queue(&ready_queue);
-            printf("\n");
+            fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
             while(isEmpty(&ready_queue)){
                 current_time++;
                 idle_time++;
@@ -84,7 +83,7 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options) {
             start_time = current_time;
             fprintf(stdout, "| %-8d| Started P%-11s| ", current_time, current_process.id);
             display_queue(&ready_queue);
-            fprintf(stdout, "\n");
+            fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
 
             dequeue(&ready_queue);
             /*Update current time and current processes metrics*/
@@ -108,21 +107,20 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options) {
                 i++;
             }
 
-            //fprintf(fp, "%d\tCompleted P%s\t", current_time, current_process.id);
             fprintf(stdout, "| %-8d| Completed P%-9s| ", current_time, current_process.id);
             display_queue(&ready_queue);
-            fprintf(stdout, "\n");
+            fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
 
         }
     }
 
-    fprintf(stdout, "+---------+---------------------+---------------------------\n");
     printf("Simulation complete.");
     fprintf(stdout, "\n\n~~~~~~~~~~\n\n");
 
     qsort(processes, num_processes, sizeof(Process), compare_completion);
 
-    display_metrics(processes, num_processes, idle_time, current_time);
+    // display_metrics(processes, num_processes, idle_time, current_time);
+    display_metrics_table(processes, num_processes, idle_time, current_time);
     fprintf(stdout, "\n~~~~~~~~~~\n");
 
     isatty(fileno(stdout)) ?
