@@ -47,12 +47,9 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options) {
     qsort(processes, num_processes, sizeof(Process), compare_arrival);
 
     fprintf(stdout, "~~~~~~~~~~\n\n");
-    //fprintf(fp, "\n\nTime\tEvent\t\tReady Queue\n");
-    //fprintf(fp, "\n\n+---------+---------------------+----------------------------------\n");
     fprintf(stdout, "+---------+---------------------+---------------------------\n");
     fprintf(stdout, "| %-8s| %-20s| %-40s", "Time", "Event", "Ready Queue");
     fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
-    //fprintf(fp, "\n---------------------------------------\n");
 
     int i = 0; 
     while (i < num_processes || !isEmpty(&ready_queue)) {
@@ -66,7 +63,6 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options) {
         /*If queue is empty track idle state */
         if (isEmpty(&ready_queue)) {
 
-            //fprintf(fp, "%d\tIdle\t\t", current_time);
             fprintf(stdout, "| %-8d| %-20s| ", current_time, "Idle");
 
             display_queue(&ready_queue);
@@ -86,7 +82,6 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options) {
             Process current_process = ready_queue.data[ready_queue.front];
 
             start_time = current_time;
-            //fprintf(fp, "%d\tStarted P%s\t", current_time, current_process.id);
             fprintf(stdout, "| %-8d| Started P%-11s| ", current_time, current_process.id);
             display_queue(&ready_queue);
             fprintf(stdout, "\n");
@@ -121,7 +116,6 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options) {
         }
     }
 
-    //printf("---------------------------------------\n");
     fprintf(stdout, "+---------+---------------------+---------------------------\n");
     printf("Simulation complete.");
     fprintf(stdout, "\n\n~~~~~~~~~~\n\n");

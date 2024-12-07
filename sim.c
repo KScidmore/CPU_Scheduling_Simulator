@@ -195,11 +195,6 @@ int process_input(Process processes[], int choice) {
 
 int process_file_input(Process processes[], Options *options) {
 
-    FILE *input = stdin;
-    if (options->input_file[0] != '\0') {
-        input = fopen(options->input_file, "r");
-    }
-
     int i = 0;
     int unique = 0;
     char temp_id[10];
@@ -208,12 +203,12 @@ int process_file_input(Process processes[], Options *options) {
 
         if (strcmp(options->alg_selection, "priority") == 0 ||
             strcmp(options->alg_selection, "pp") == 0) {
-            if (fscanf(input, "%s %d %d %d", processes[i].id, 
+            if (fscanf(stdin, "%s %d %d %d", processes[i].id, 
                 &processes[i].arrival_time, &processes[i].burst_time, &processes[i].priority) != 4 && i <= MAX_PROCESSES) {          
                 break;
             }
         } else {
-            if (fscanf(input, "%s %d %d", processes[i].id, 
+            if (fscanf(stdin, "%s %d %d", processes[i].id, 
                 &processes[i].arrival_time, &processes[i].burst_time) == 3 && i <= MAX_PROCESSES) {
                 break;
             }
@@ -233,13 +228,10 @@ int process_file_input(Process processes[], Options *options) {
         }
 
         i++;
+    
+
     }
-
-
-    if (input != stdin) {
-        fclose(input);
-    }
-
+    
     return i;
 }
 

@@ -1,0 +1,57 @@
+~~~~~~~~~~
+
++---------+---------------------+---------------------------
+| Time    | Event               | Ready Queue                             
++---------+---------------------+---------------------------
+| 0       | Started P1          | [P1]
+| 4       | Completed P1        | []
+| 4       | Idle                | []
+| 8       | Started P2          | [P2]
+| 11      | Completed P2        | []
+| 11      | Idle                | []
+| 12      | Started P3          | [P3]
+| 17      | Completed P3        | []
+| 17      | Idle                | []
+| 20      | Started P4          | [P4]
+| 22      | Completed P4        | []
++---------+---------------------+---------------------------
+Simulation complete.
+
+~~~~~~~~~~
+
+Metrics for P1: Turnaround= 4, Waiting= 0, Response= 0
+Metrics for P2: Turnaround= 3, Waiting= 0, Response= 0
+Metrics for P3: Turnaround= 5, Waiting= 0, Response= 0
+Metrics for P4: Turnaround= 2, Waiting= 0, Response= 0
+
+Metrics Summary:
+Average Waiting Time: 0.00
+Average Turnaround Time: 3.50
+Average Response Time: 0.00
+Throughput: 0.18 processes per time unit
+CPU Utilization: 63.64%
+
+~~~~~~~~~~
+
+Gantt Chart:
+--------------------------------------------
+Time: 0   1   2   3   4   5   6   7   8   9   
+P1 | ### ### ### ### ###                     
+P2 |                                 ### ### 
+P3 |                                         
+P4 |                                         
+--------------------------------------------
+Time: 10  11  12  13  14  15  16  17  18  19  
+P1 |                                         
+P2 | ### ###                                 
+P3 |         ### ### ### ### ### ###         
+P4 |                                         
+--------------------------------------------
+Time: 20  21  22  
+P1 |             
+P2 |             
+P3 |             
+P4 | ### ### ### 
+--------------------------------------------
+
+~~~~~~~~~~
