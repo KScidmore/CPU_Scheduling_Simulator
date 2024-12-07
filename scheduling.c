@@ -10,9 +10,31 @@
 #include "circular_queue.h"
 #include "ansi_esc_seqs.h"
 #include "options.h"
+#include "display.h"
+#include "compare.h"
 
 
-
+/*---------- FUNCTION: simulate_FCFS -----------------------------------
+/  Function Description:
+/    Simulates the First Come First Served scheduling algorithm on a set of 
+/    processes. The function tracks process execution, waiting times, 
+/    response times, and completion times. It outputs detailed logs to 
+/    the console or an optional file stream, displaying scheduling events 
+/    and overall metrics upon completion.
+/  
+/  Caller Input:
+/    - Process processes[]: Array of processes to be scheduled.
+/    - int num_processes: Number of processes in the array.
+/    - FILE *fp: Optional file pointer for writing simulation logs 
+/  
+/  Caller Output:
+/    N/A - No return value. Results are displayed directly in the console 
+/          or written to the file if provided.
+/  
+/  Assumptions, Limitations, Known Bugs:
+/    - 
+/
+-------------------------------------------------------------------------*/
 void simulate_FCFS(Process processes[], int num_processes, Options *options, FILE *fp) {
 
     CircularQueue ready_queue;
@@ -116,7 +138,27 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options, FIL
 
 }
 
-
+/*---------- FUNCTION: simulate_SJF -----------------------------------
+/  Function Description:
+/    Simulates the Shortest Job First scheduling algorithm on a set of 
+/    processes. The function tracks process execution, waiting times, 
+/    response times, and completion times. It outputs detailed logs to 
+/    the console or an optional file stream, displaying scheduling events 
+/    and overall metrics upon completion.
+/  
+/  Caller Input:
+/    - Process processes[]: Array of processes to be scheduled.
+/    - int num_processes: Number of processes in the array.
+/    - FILE *fp: Optional file pointer for writing simulation logs 
+/  
+/  Caller Output:
+/    N/A - No return value. Results are displayed directly in the console 
+/          or written to the file if provided.
+/  
+/  Assumptions, Limitations, Known Bugs:
+/    - 
+/
+-------------------------------------------------------------------------*/
 void simulate_SJF(Process processes[], int num_processes, Options *options, FILE *fp) {
 
 
@@ -202,7 +244,27 @@ void simulate_SJF(Process processes[], int num_processes, Options *options, FILE
 
 }
 
-
+/*---------- FUNCTION: simulate_priority -------------------------------
+/  Function Description:
+/    Simulates the priority scheduling algorithm on a set of processes.
+/    The function tracks process execution, waiting times, response times,
+/    and completion times. It outputs detailed logs to the console or an
+/    optional file stream, displaying scheduling events and overall metrics 
+/    upon completion.
+/  
+/  Caller Input:
+/    - Process processes[]: Array of processes to be scheduled.
+/    - int num_processes: Number of processes in the array.
+/    - FILE *fp: Optional file pointer for writing simulation logs 
+/  
+/  Caller Output:
+/    N/A - No return value. Results are displayed directly in the console 
+/          or written to the file if provided.
+/  
+/  Assumptions, Limitations, Known Bugs:
+/    - 
+/
+------------------------------------------------------------------------*/
 void simulate_priority(Process processes[], int num_processes, Options *options, FILE *fp) {
     
     FILE *output = stdout;
@@ -292,197 +354,28 @@ void simulate_priority(Process processes[], int num_processes, Options *options,
 
 }
 
-void sort_queue(CircularQueue *queue, int (*compare)(const void *, const void *)) {
-    if (queue->fill <= 1) return; 
-
-    Process temp_array[MAX_PROCESSES];
-    int index = queue->front;
-    for (int i = 0; i < queue->fill; i++) {
-        temp_array[i] = queue->data[index];
-        index = (index + 1) % MAX_PROCESSES; 
-    }
-
-    
-    qsort(temp_array, queue->fill, sizeof(Process), compare);
-
-
-    for (int i = 0; i < queue->fill; i++) {
-        queue->data[(queue->front + i) % MAX_PROCESSES] = temp_array[i];
-    }
-}
-
-void display_metrics(Process processes[], int num_processes, int idle_time, int current_time, FILE *fp) {
-    int total_waiting = 0;
-    int total_turnaround = 0;
-    int total_response = 0; 
-    int total_completion = current_time;
-
-    for (int i = 0; i < num_processes; i++) {
-        fprintf(fp, "Metrics for P%s: Turnaround= %d, Waiting= %d, Response= %d\n",
-                processes[i].id,
-                processes[i].turnaround_time,
-                processes[i].waiting_time,
-                processes[i].response_time);
-    }
-
-    for (int i = 0; i < num_processes; i++) {
-        total_waiting += processes[i].waiting_time;
-        total_turnaround += processes[i].turnaround_time;
-        total_response += processes[i].response_time;
-    }
-
-    float avg_waiting = (float)total_waiting / num_processes;
-    float avg_turnaround = (float)total_turnaround / num_processes;
-    float avg_response = (float)total_response / num_processes; 
-    float throughput = (float)num_processes / total_completion;
-    float cpu_utilization = (total_completion - idle_time) / (float)total_completion * 100;
-
-    fprintf(fp, "\nMetrics Summary:\n");
-    fprintf(fp, "Average Waiting Time: %.2f\n", avg_waiting);
-    fprintf(fp, "Average Turnaround Time: %.2f\n", avg_turnaround);
-    fprintf(fp, "Average Response Time: %.2f\n", avg_response);
-    fprintf(fp, "Throughput: %.2f processes per time unit\n", throughput);
-    fprintf(fp, "CPU Utilization: %.2f%%\n", cpu_utilization);
-}
-
-
-void display_chart(Process processes[], int num_processes, FILE *fp) {
-   
-    int max_time = 0;
-    int current_time = 0;
-
-    for (int i = 0; i < num_processes; i++) {
-        if (processes[i].completion_time > max_time) {
-            max_time = processes[i].completion_time;
-        }
-    }
-
-    fprintf(fp, "\nGantt Chart:\n");
-    fprintf(fp, ANSI_BOLD ANSI_BLUE "--------------------------------------------" ANSI_RESET "\n");
-
-    for (int start = 0; start <= max_time; start += MAX_WIDTH) {
-
-        int end = (start + MAX_WIDTH - 1 < max_time) ? start + MAX_WIDTH - 1 : max_time;
-
-        
-        fprintf(fp, ANSI_BOLD ANSI_BLUE "Time: " ANSI_RESET);
-        for (int t = start; t <= end; t++) {
-            fprintf(fp, ANSI_BOLD ANSI_BLUE "%-4d" ANSI_RESET, t);  
-        }
-        fprintf(fp, "\n");
-
-        
-        for (int i = 0; i < num_processes; i++) {
-            const char* color;
-            switch (i % 5) {
-                case 0: color = ANSI_RED; break;
-                case 1: color = ANSI_GREEN; break;
-                case 2: color = ANSI_YELLOW; break;
-                case 3: color = ANSI_BLUE; break;
-                case 4: color = ANSI_MAGENTA; break;
-            }
-            fprintf(fp, "%sP%-2s| " ANSI_RESET, color, processes[i].id);  
-
-            for (int j = start; j <= end; j++) {
-                if (j >= processes[i].start_time && j <= processes[i].completion_time) {
-                    
-                    fprintf(fp, "%s### " ANSI_RESET, color); 
-                    
-                } else {
-                    fprintf(fp, "    "); 
-                }
-                current_time++;
-            }
-            fprintf(fp, "\n");
-        }
-
-        fprintf(fp, ANSI_BOLD ANSI_BLUE "--------------------------------------------" ANSI_RESET "\n");
-    }
-}
-
-void display_chart_file(Process processes[], int num_processes, FILE *fp) {
-   
-    int max_time = 0;
-    int current_time = 0;
-
-    for (int i = 0; i < num_processes; i++) {
-        if (processes[i].completion_time > max_time) {
-            max_time = processes[i].completion_time;
-        }
-    }
-
-    fprintf(fp, "\nGantt Chart:\n");
-    fprintf(fp, "--------------------------------------------\n");
-
-    for (int start = 0; start <= max_time; start += MAX_WIDTH) {
-
-        int end = (start + MAX_WIDTH - 1 < max_time) ? start + MAX_WIDTH - 1 : max_time;
-
-        
-        fprintf(fp, "Time: ");
-        for (int t = start; t <= end; t++) {
-            fprintf(fp, "%-4d", t);  
-        }
-        fprintf(fp, "\n");
-
-        
-        for (int i = 0; i < num_processes; i++) {
-            fprintf(fp, "P%-2s| ", processes[i].id);  
-
-            for (int j = start; j <= end; j++) {
-                if (j >= processes[i].start_time && j <= processes[i].completion_time) {
-                    
-                    fprintf(fp, "### "); 
-                    
-                } else {
-                    fprintf(fp, "    "); 
-                }
-                current_time++;
-            }
-            fprintf(fp, "\n");
-        }
-
-        fprintf(fp, "--------------------------------------------\n");
-    }
-}
-
-int compare_arrival(const void *a, const void *b) {
-    Process *process_a = (Process *)a;
-    Process *process_b = (Process *)b;
-    
-    return process_a->arrival_time - process_b->arrival_time;
-}
-
-int compare_burst(const void *a, const void *b) {
-    Process *process_a = (Process *)a;
-    Process *process_b = (Process *)b;
-
-    if (process_a->burst_time != process_b->burst_time) {
-        return process_a->burst_time - process_b->burst_time;
-    }
-
-    
-    return process_a->arrival_time - process_b->arrival_time;
-}
-
-int compare_completion(const void *a, const void *b) {
-    Process *process_a = (Process *)a;
-    Process *process_b = (Process *)b;
-    return process_a->completion_time - process_b->completion_time;
-}
-
-int compare_priority(const void *a, const void *b) {
-    Process *process_a = (Process *)a;
-    Process *process_b = (Process *)b;
-
-    if (process_a->priority != process_b->priority) {
-        return process_a->priority - process_b->priority;
-    }
-
-    
-    return process_a->arrival_time - process_b->arrival_time;
-}
-
+/*---------- FUNCTION: simulate_SRTF -----------------------------------
+/  Function Description:
+/    Simulates the Shortest Remaining Time First scheduling algorithm 
+/    on a set of processes. The function tracks process execution, 
+/    waiting times, response times, and completion times. It outputs 
+/    detailed logs to the console or an optional file stream, 
+/    displaying scheduling events and overall metrics upon completion.
+/  
+/  Caller Input:
+/    - Process processes[]: Array of processes to be scheduled.
+/    - int num_processes: Number of processes in the array.
+/    - int time_quantum: Time slice for Round Robin scheduling.
+/    - FILE *fp: Optional file pointer for writing simulation logs 
+/  
+/  Caller Output:
+/    N/A - No return value. Results are displayed directly in the console 
+/          or written to the file if provided.
+/  
+/  Assumptions, Limitations, Known Bugs:
+/    - 
+/
+-------------------------------------------------------------------------*/
 void simulate_SRTF(Process processes[], int num_processes, FILE *fp) {
 
     CircularQueue ready_queue;
@@ -602,7 +495,28 @@ void simulate_SRTF(Process processes[], int num_processes, FILE *fp) {
 }
 
 
-
+/*---------- FUNCTION: simulate_preemptive_priority ----------------------------
+/  Function Description:
+/    Simulates the Preemptive Priority scheduling algorithm on a set of processes.
+/    The function tracks process execution, waiting times, response times,
+/    and completion times. It outputs detailed logs to the console or an
+/    optional file stream, displaying scheduling events and overall metrics upon 
+/    completion.
+/  
+/  Caller Input:
+/    - Process processes[]: Array of processes to be scheduled.
+/    - int num_processes: Number of processes in the array.
+/    - int time_quantum: Time slice for Round Robin scheduling.
+/    - FILE *fp: Optional file pointer for writing simulation logs 
+/  
+/  Caller Output:
+/    N/A - No return value. Results are displayed directly in the console 
+/          or written to the file if provided.
+/  
+/  Assumptions, Limitations, Known Bugs:
+/    - 
+/
+---------------------------------------------------------------------------------*/
 void simulate_preemptive_priority(Process processes[], int num_processes, FILE *fp) {
 
     CircularQueue ready_queue;
@@ -726,6 +640,28 @@ void simulate_preemptive_priority(Process processes[], int num_processes, FILE *
     display_preemptive_chart(processes, num_processes, fp);
 }
 
+/*---------- FUNCTION: simulate_round_robin ----------------------------
+/  Function Description:
+/    Simulates the Round Robin scheduling algorithm on a set of processes.
+/    The function tracks process execution, waiting times, response times,
+/    and completion times. It outputs detailed logs to the console or an
+/    optional file stream, displaying scheduling events and overall metrics 
+/    upon completion.
+/  
+/  Caller Input:
+/    - Process processes[]: Array of processes to be scheduled.
+/    - int num_processes: Number of processes in the array.
+/    - int time_quantum: Time slice for Round Robin scheduling.
+/    - FILE *fp: Optional file pointer for writing simulation logs 
+/  
+/  Caller Output:
+/    N/A - No return value. Results are displayed directly in the console 
+/          or written to the file if provided.
+/  
+/  Assumptions, Limitations, Known Bugs:
+/    - 
+/
+------------------------------------------------------------------------*/
 void simulate_round_robin(Process processes[], int num_processes, int time_quantum, FILE *fp) {
 
     CircularQueue ready_queue;
@@ -848,73 +784,3 @@ void simulate_round_robin(Process processes[], int num_processes, int time_quant
     display_metrics(processes, num_processes, idle_time, current_time, fp);
     display_preemptive_chart(processes, num_processes, fp);
 }
-
-int compare_predicted_burst(const void *a, const void *b) {
-    Process *process_a = (Process *)a;
-    Process *process_b = (Process *)b;
-
-    if (process_a->predicted_burst != process_b->predicted_burst) {
-        return process_a->predicted_burst - process_b->predicted_burst;
-    }
-
-    return process_a->arrival_time - process_b->arrival_time;
-}
-
-void display_preemptive_chart(Process processes[], int num_processes, FILE *fp) {
-    int max_time = 0;
-    int current_time = 0;
-    int flag = 0;
-
-    
-    for (int i = 0; i < num_processes; i++) {
-        if (processes[i].completion_time > max_time) {
-            max_time = processes[i].completion_time;
-        }
-    }
-
-    printf("\nGantt Chart:\n");
-    printf(ANSI_BOLD ANSI_BLUE "--------------------------------------------" ANSI_RESET "\n");
-
-    
-    for (int start = 0; start <= max_time; start += MAX_WIDTH) {
-        int end = (start + MAX_WIDTH - 1 < max_time) ? start + MAX_WIDTH - 1 : max_time;
-
-        printf(ANSI_BOLD ANSI_BLUE "Time: " ANSI_RESET);
-        for (int t = start; t <= end; t++) {
-            printf(ANSI_BOLD ANSI_BLUE "%-4d" ANSI_RESET, t);  
-        }
-        printf("\n");
-
-        
-        for (int i = 0; i < num_processes; i++) {
-            const char* color;
-            switch (i % 5) {
-                case 0: color = ANSI_RED; break;
-                case 1: color = ANSI_GREEN; break;
-                case 2: color = ANSI_YELLOW; break;
-                case 3: color = ANSI_BLUE; break;
-                case 4: color = ANSI_MAGENTA; break;
-            }
-            printf("%sP%-2s| " ANSI_RESET, color, processes[i].id);  
-
-            
-            for (int t = start; t <= end; t++) {
-                if (processes[i].running_time[t] == 1) {  
-                    printf("%s### " ANSI_RESET, color); 
-                } else {
-                    if(!flag){
-
-                    }
-
-                    printf("    ");  
-                }
-                current_time++;
-            }
-            printf("\n");
-        }
-
-        printf(ANSI_BOLD ANSI_BLUE "--------------------------------------------" ANSI_RESET "\n");
-    }
-}
-
-
