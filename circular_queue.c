@@ -3,11 +3,14 @@
 /  Email(s):    abois526@mtroyal.ca, kscid125@mtroyal.ca 
 /  File Name:   circular_queue.c
 /
-/  Program Description:
-/    TODO - a short, high-level overview of the program's purpose
-/    from the perspective of the user (what it does, not how it does it)
+/  File Description:
+/    This file implements a circular queue data structure and provides
+/    functions to manipulate and display elements within it. The circular
+/    queue supports operations such as enqueue, dequeue, display, and sort.
+/    It uses a fixed-size array to store the elements and wraps the queue
+/    around when the end of the array is reached.
+/
 /---------------------------------------------------------*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,7 +26,34 @@ void peek_rear(CircularQueue *queue);
 
 
 /*---------- Public Functions Used Outside Module ----------------------------*/
-
+/*---------- FUNCTION DOCUMENTATION BLOCK ------------------------------
+/  Functions Overview:
+/    These functions manage a circular queue which is used as the ready
+/    queue for scheduling processes.
+/
+/  Functions and Their Purpose:
+/    - init_queue: Initializes the circular queue by setting the front,
+/      rear, and fill attributes to indicate an empty queue.
+/    - isEmpty: Checks if the queue is empty.
+/    - isFull: Checks if the queue is full.
+/    - enqueue: Adds a process to the rear of the queue. If the queue
+/      is full, it reports an error. If the queue is empty, it adjusts
+/      the front pointer to the start.
+/    - dequeue: Removes and returns the process at the front of the queue.
+/
+/  Input Parameters:
+/    - All functions operate on a pointer to a CircularQueue structure and,
+/      where applicable, take a Process structure as input.
+/  
+/  Output:
+/    - The functions either return an integer value (for checking if the
+/      queue is empty or full, or for removing and returning a process)
+/      or modify the queue by enqueuing or dequeuing processes. 
+/
+/  Assumptions, Limitations, Known Bugs:
+/    - No known bugs at this time.
+/
+/------------------------------------------------------------------------*/
 void init_queue(CircularQueue *queue) {
     queue->front = -1;
     queue->rear = -1;
@@ -69,6 +99,24 @@ Process dequeue(CircularQueue *queue) {
     }
 }
 
+/*---------- FUNCTION: display_queue ------------------------------------
+/  Function Description:
+/    Displays the elements of a circular queue. The function iterates through 
+/    the queue and prints each process ID enclosed in square brackets, 
+/    separated by commas.
+/  
+/  Caller Input:
+/    - CircularQueue *queue: Pointer to the circular queue to be displayed.
+/    - FILE *fp: File pointer where the queue elements should be written to.
+/  
+/  Caller Output:
+/    N/A - No return value. The queue is displayed directly to the specified
+/          file pointer.
+/  
+/  Assumptions, Limitations, Known Bugs:
+/    - No known bugs at this time
+/
+------------------------------------------------------------------------*/
 void display_queue(CircularQueue *queue, FILE *fp) {
 
     fprintf(fp, "[");
@@ -96,32 +144,12 @@ void display_queue(CircularQueue *queue, FILE *fp) {
 /  
 /  Caller Output:
 /    N/A - No return value or output parameters. The queue is sorted
-/          directly, modifying the original data in `queue`.
+/          directly, modifying the original data in queue.
 /  
 /  Assumptions, Limitations, Known Bugs:
-/    - Assumes `queue` is a valid, properly initialized circular queue.
-/    - Assumes `queue->fill` accurately reflects the number of elements
-/      in the queue, and `queue->front` points to the first element.
-/    - Assumes the provided `compare` function adheres to `qsort` 
-/      requirements (returning negative, zero, or positive values).
-/    - If `queue->fill <= 1`, the function returns immediately as sorting 
-/      is unnecessary.
-/    - Assumes the size of the queue does not exceed `MAX_PROCESSES`.
-/    - Known limitation: Temporarily uses extra memory equal to the size 
-/      of the queue (proportional to `MAX_PROCESSES`).
-/  
-/  Notes:
-/    - This function is generic and can be used to sort a circular queue
-/      based on various criteria by providing a different comparison function.
-/    - Reinserts elements in the queue's logical order, preserving
-/      its circular nature.
-/    - Example usage:
-/          sort_queue(&queue, compare_arrival);
-/      where `compare_arrival` is a function to sort by arrival time.
-/    - Time complexity: O(n log n) due to `qsort`.
+/    - No known bugs at this time
 /
 ------------------------------------------------------------------------*/
-
 void sort_queue(CircularQueue *queue, int (*compare)(const void *, const void *)) {
     if (queue->fill <= 1) return; 
 
