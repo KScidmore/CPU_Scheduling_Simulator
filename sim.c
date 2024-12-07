@@ -31,6 +31,7 @@ int main(int argc, char **argv) {
     } else {
         run_interactive_mode(processes, &options);
     }
+        run_interactive_mode(processes, &options);
 
     return 0;
     
@@ -204,20 +205,35 @@ int process_file_input(Process processes[], Options *options) {
     int unique = 0;
     char temp_id[10];
 
-
-    //populates line and checks if it exists 
-    while (fscanf(input, "%s %d %d", processes[i].id, &processes[i].arrival_time, &     processes[i].burst_time) == 3 && i <= MAX_PROCESSES) {
-        processes[i].priority = -1;           
-        processes[i].remaining_time = -1;
-        processes[i].start_time = -1;         
-        processes[i].completion_time = -1;    
-        processes[i].turnaround_time = -1;    
-        processes[i].waiting_time = -1;       
-        processes[i].response_time = -1;
-        processes[i].predicted_burst = -1;
-        processes[i].has_started = 0;
-        i++;
-    }
+    if (strcmp(options->alg_selection, "priority") == 0 ||
+        strcmp(options->alg_selection, "pp") == 0) {
+        while (fscanf(input, "%s %d %d %d", processes[i].id, 
+        &processes[i].arrival_time, &processes[i].burst_time, &processes[i].priority) == 4 && i <= MAX_PROCESSES) {          
+            processes[i].remaining_time = -1;
+            processes[i].start_time = -1;         
+            processes[i].completion_time = -1;    
+            processes[i].turnaround_time = -1;    
+            processes[i].waiting_time = -1;       
+            processes[i].response_time = -1;
+            processes[i].predicted_burst = -1;
+            processes[i].has_started = 0;
+            i++;
+        }
+    } else {
+        while (fscanf(input, "%s %d %d", processes[i].id, 
+        &processes[i].arrival_time, &processes[i].burst_time) == 3 && i <= MAX_PROCESSES) {
+            processes[i].priority = -1;           
+            processes[i].remaining_time = -1;
+            processes[i].start_time = -1;         
+            processes[i].completion_time = -1;    
+            processes[i].turnaround_time = -1;    
+            processes[i].waiting_time = -1;       
+            processes[i].response_time = -1;
+            processes[i].predicted_burst = -1;
+            processes[i].has_started = 0;
+            i++;
+        }
+    } 
 
     for (int j = 0; j < MAX_RUNTIME; j++) {
         processes[i].running_time[j] = 0;
@@ -226,6 +242,7 @@ int process_file_input(Process processes[], Options *options) {
     if (input != stdin) {
         fclose(input);
     }
+
     return i;
 }
 
@@ -285,8 +302,6 @@ void print_help() {
     printf("\t-o filename\n\t\tSpecify the full path of an output file.\n\n");
     printf("\t-h, --help\n\t\tPrint detailed help info about the program.\n\n");
 }
-
-
 
 
 int is_unique_id(Process processes[], int count, char *id) {
