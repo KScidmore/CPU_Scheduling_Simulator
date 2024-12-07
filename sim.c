@@ -13,7 +13,7 @@ int parse_cli_args(int argc, char **argv, Options *options);
 void init_options(Options *options);
 void print_help();
 int process_input(Process processes[], int choice);
-int process_file_input(Process processes[], Options *options);
+int process_file_input(Process processes[], Options *options, int choice);
 void run_cli_mode(int argc, char **argv, Process processes[], Options *options);
 void run_interactive_mode(Process processes[], Options *options);
 void run_selected_algorithm(Process processes[], int num_processes, Options *options);
@@ -61,31 +61,6 @@ int main(int argc, char **argv) {
 
 void run_cli_mode(int argc, char **argv, Process processes[], Options *options) {
 
-/*     int num_processes = 0;
-    int choice = 0;
-
-    if (options->input_file[0] != '\0') {
-        num_processes = process_file_input(processes, options);
-    } else if (!isatty(fileno(stdin))) {
-        num_processes = process_file_input(processes, options);
-    } else {
-        // get interactively if null 
-        if (options->alg_selection[0] == '\0') {
-            print_scheduling_menu();
-            scanf("%d", &choice);
-            switch (choice) {
-                case 1: strcpy(options->alg_selection, "fcfs"); break;
-                case 2: strcpy(options->alg_selection, "sjf"); break;
-                case 3: strcpy(options->alg_selection, "rr"); break;
-                case 4: strcpy(options->alg_selection, "priority"); break;
-                default: break;
-            } 
-        } 
-        num_processes = process_input(processes, choice);
-    }
-
-    run_selected_algorithm(processes, num_processes, options); */
-
     int num_processes = 0;
     int choice = 0;
 
@@ -99,10 +74,27 @@ void run_cli_mode(int argc, char **argv, Process processes[], Options *options) 
             case 4: strcpy(options->alg_selection, "priority"); break;
             default: fprintf(stderr, "Invalid choice.\n"); break;
         } 
+    } else {
+        if (strcmp(options->alg_selection, "fcfs") == 0) {
+            choice = 1;
+        } else if (strcmp(options->alg_selection, "sjf") == 0) {
+            choice = 2;
+        } else if (strcmp(options->alg_selection, "srtf") == 0){
+            choice = 3;
+        } else if (strcmp(options->alg_selection, "rr") == 0) {
+            choice = 4;
+        } else if (strcmp(options->alg_selection, "priority") == 0) {
+            choice = 5;
+        } else if (strcmp(options->alg_selection, "pp") == 0) {
+            choice = 6;
+        } else{
+            choice = 0;
+            printf("Invalid choice.\n");
+        }
     }
 
     if (options->input_file[0] != '\0') {
-        num_processes = process_file_input(processes, options);
+        num_processes = process_file_input(processes, options, choice);
     } else {
         num_processes = process_input(processes, choice);
     }
@@ -235,46 +227,7 @@ int process_input(Process processes[], int choice) {
     return num;
 }
 
-int process_file_input(Process processes[], Options *options) {
-
-/*     int i = 0;
-    int unique = 0;
-    char temp_id[10];
-
-    while (1) {
-
-        if (strcmp(options->alg_selection, "priority") == 0 ||
-            strcmp(options->alg_selection, "pp") == 0) {
-            if (fscanf(stdin, "%s %d %d %d", processes[i].id, 
-                &processes[i].arrival_time, &processes[i].burst_time, &processes[i].priority) != 4 && i <= MAX_PROCESSES) {          
-                break;
-            }
-        } else {
-            if (fscanf(stdin, "%s %d %d", processes[i].id, 
-                &processes[i].arrival_time, &processes[i].burst_time) == 3 && i <= MAX_PROCESSES) {
-                break;
-            }
-            processes[i].priority = -1;
-        }        
-        processes[i].remaining_time = processes[i].burst_time;
-        processes[i].start_time = -1;         
-        processes[i].completion_time = -1;    
-        processes[i].turnaround_time = -1;    
-        processes[i].waiting_time = -1;       
-        processes[i].response_time = -1;
-        processes[i].predicted_burst = -1;
-        processes[i].has_started = 0;
-
-        for (int j = 0; j < MAX_RUNTIME; j++) {
-            processes[i].running_time[j] = 0;
-        }
-
-        i++;
-    
-
-    }
-    
-    return i; */
+int process_file_input(Process processes[], Options *options, int choice) {
 
     int i = 0;
 
@@ -287,19 +240,17 @@ int process_file_input(Process processes[], Options *options) {
         char temp_id[10];
         int unique = 0;
         char pid[10];
-        int arrival, burst;
+        int arrival, burst, priority, vals_read;
 
-        int vals_read = fscanf(stdin, "%s %d %d", temp_id, &arrival, &burst);
+        if (choice >= 0 && choice < 5) {
+            vals_read = fscanf(stdin, "%s %d %d", temp_id, &arrival, &burst);
+        } else if (choice == 5 || choice == 6) {
+            vals_read = fscanf(stdin, "%s %d %d %d", temp_id, &arrival, &burst, &priority);
+        } else {
+            fprintf(stderr, "Error: invalid choice.\n");
+        }
 
         if (vals_read == EOF) break;
-
-        if (vals_read == 3) {
-
-        } else if (vals_read == 4) {
-
-        } else {
-            fprintf(stderr, "Error: issue with line format.\n");
-        }
 
         while (!unique) {
             if (is_unique_id(processes, i, temp_id)) {
@@ -312,7 +263,7 @@ int process_file_input(Process processes[], Options *options) {
 
         processes[i].arrival_time = arrival;
         processes[i].burst_time = burst;
-        processes[i].priority = -1;
+        processes[i].priority = (vals_read == 3) ? -1 : priority;
         processes[i].remaining_time = processes[i].burst_time;
         processes[i].start_time = -1;         
         processes[i].completion_time = -1;    
@@ -324,7 +275,7 @@ int process_file_input(Process processes[], Options *options) {
 
         for (int j = 0; j < MAX_RUNTIME; j++) {
             processes[i].running_time[j] = 0;
-        }
+        } 
 
         i++;
     }
