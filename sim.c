@@ -18,6 +18,7 @@ void run_cli_mode(int argc, char **argv, Process processes[], Options *options);
 void run_interactive_mode(Process processes[], Options *options);
 void run_selected_algorithm(Process processes[], int num_processes, Options *options);
 void print_scheduling_menu();
+int terminal_prompt();
 
 
 int main(int argc, char **argv) {
@@ -27,15 +28,20 @@ int main(int argc, char **argv) {
     init_options(&options);
     parse_cli_args(argc, argv, &options);
 
+    FILE *og_stdin = stdin;
+    FILE *og_stdout = stdout;
+
     if (options.input_file[0] != '\0') {
         if (freopen(options.input_file, "r", stdin) == NULL) {
             fprintf(stderr, "Error: input file did not open.\n");
+            exit(1);
         }
     }
 
     if (options.output_file[0] != '\0') {
         if (freopen(options.output_file, "w", stdout) == NULL) {
             fprintf(stderr, "Error: output file did not open.\n");
+            exit(1);
         }
     }
 
@@ -45,13 +51,17 @@ int main(int argc, char **argv) {
         run_interactive_mode(processes, &options);
     }
 
+    if (stdin != og_stdin) stdin = og_stdin;
+    if (stdout != og_stdout) stdout = og_stdout;
+
     return 0;
     
 }
 
 
 void run_cli_mode(int argc, char **argv, Process processes[], Options *options) {
-    int num_processes = 0;
+
+/*     int num_processes = 0;
     int choice = 0;
 
     if (options->input_file[0] != '\0') {
@@ -74,7 +84,41 @@ void run_cli_mode(int argc, char **argv, Process processes[], Options *options) 
         num_processes = process_input(processes, choice);
     }
 
+    run_selected_algorithm(processes, num_processes, options); */
+
+    int num_processes = 0;
+    int choice = 0;
+
+    if (options->alg_selection[0] == '\0') {
+        print_scheduling_menu();
+        choice = terminal_prompt();
+        switch (choice) {
+            case 1: strcpy(options->alg_selection, "fcfs"); break;
+            case 2: strcpy(options->alg_selection, "sjf"); break;
+            case 3: strcpy(options->alg_selection, "rr"); break;
+            case 4: strcpy(options->alg_selection, "priority"); break;
+            default: fprintf(stderr, "Invalid choice.\n"); break;
+        } 
+    }
+
+    if (options->input_file[0] != '\0') {
+        num_processes = process_file_input(processes, options);
+    } else {
+        num_processes = process_input(processes, choice);
+    }
+
     run_selected_algorithm(processes, num_processes, options);
+
+}
+
+int terminal_prompt() {
+    int choice = 0;
+    FILE *tty = fopen("/dev/tty", "r");
+    if (stdin != tty) {
+        fscanf(tty, "%d", &choice);
+    }
+    fclose(tty);
+    return choice; 
 }
 
 
@@ -109,7 +153,6 @@ void print_scheduling_menu() {
     fprintf(stderr, "5. Priority Scheduling\n");
     fprintf(stderr, "6. PP (Preemptive Priority)\n");
     fprintf(stderr, "\nEnter your choice (1-4): ");
-
 }
 
 void run_selected_algorithm(Process processes[], int num_processes, Options *options) {
@@ -136,7 +179,6 @@ int process_input(Process processes[], int choice) {
     int num;
     fprintf(stderr, "\nEnter the number of processes (max %d): ", MAX_PROCESSES);
     scanf("%d", &num);
-
 
     if(num < 1 || num > MAX_PROCESSES){
         fprintf(stderr, "Invalid number of processes. Exiting.\n");
@@ -195,7 +237,7 @@ int process_input(Process processes[], int choice) {
 
 int process_file_input(Process processes[], Options *options) {
 
-    int i = 0;
+/*     int i = 0;
     int unique = 0;
     char temp_id[10];
 
@@ -232,7 +274,63 @@ int process_file_input(Process processes[], Options *options) {
 
     }
     
+    return i; */
+
+    int i = 0;
+
+    if (options->input_file[0] == '\0') {
+        fprintf(stderr, "Error: no input file.\n");
+        return 0;
+    }
+
+    while (i < MAX_PROCESSES) {
+        char temp_id[10];
+        int unique = 0;
+        char pid[10];
+        int arrival, burst;
+
+        int vals_read = fscanf(stdin, "%s %d %d", temp_id, &arrival, &burst);
+
+        if (vals_read == EOF) break;
+
+        if (vals_read == 3) {
+
+        } else if (vals_read == 4) {
+
+        } else {
+            fprintf(stderr, "Error: issue with line format.\n");
+        }
+
+        while (!unique) {
+            if (is_unique_id(processes, i, temp_id)) {
+                unique = 1;
+                strcpy(processes[i].id, temp_id);
+            } else {
+                fprintf(stderr, "Error: ID is taken. Enter a unique ID.\n");
+            }
+        }
+
+        processes[i].arrival_time = arrival;
+        processes[i].burst_time = burst;
+        processes[i].priority = -1;
+        processes[i].remaining_time = processes[i].burst_time;
+        processes[i].start_time = -1;         
+        processes[i].completion_time = -1;    
+        processes[i].turnaround_time = -1;    
+        processes[i].waiting_time = -1;       
+        processes[i].response_time = -1;
+        processes[i].predicted_burst = -1;
+        processes[i].has_started = 0;
+
+        for (int j = 0; j < MAX_RUNTIME; j++) {
+            processes[i].running_time[j] = 0;
+        }
+
+        i++;
+    }
+
     return i;
+
 }
 
 void init_options(Options *options) {
@@ -242,35 +340,33 @@ void init_options(Options *options) {
 }
 
 int parse_cli_args(int argc, char **argv, Options *options) {
-    if (argc > 1) {
-        for (int i = 1; i < argc; i++) {
-            if (strcmp(argv[i], "-a") == 0) {
-                if (i + 1 < argc) {
-                    strcpy(options->alg_selection, argv[++i]);
-                } else {
-                    fprintf(stderr, "Error: -a option requires an argument.");
-                    return 1;
-                }
-            } else if (strcmp(argv[i], "-i") == 0) {
-                if (i + 1 < argc) {
-                    strcpy(options->input_file, argv[++i]);
-                } else {
-                    fprintf(stderr, "Error: -i option requires an argument.\n");
-                    return 1;
-                }
-            } else if (strcmp(argv[i], "-o") == 0) {
-                if (i + 1 < argc) {
-                    strcpy(options->output_file, argv[++i]);
-                } else {
-                    fprintf(stderr, "Error: -o option requires an argument.\n");
-                    return 1;
-                }
-            } else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
-                print_help();
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-a") == 0) {
+            if (i + 1 < argc) {
+                strcpy(options->alg_selection, argv[++i]);
             } else {
-                fprintf(stderr, "Error: unknown selection. %s\n", argv[i]);
+                fprintf(stderr, "Error: -a option requires an argument.");
                 return 1;
             }
+        } else if (strcmp(argv[i], "-i") == 0) {
+            if (i + 1 < argc) {
+                strcpy(options->input_file, argv[++i]);
+            } else {
+                fprintf(stderr, "Error: -i option requires an argument.\n");
+                return 1;
+            }
+        } else if (strcmp(argv[i], "-o") == 0) {
+            if (i + 1 < argc) {
+                strcpy(options->output_file, argv[++i]);
+            } else {
+                fprintf(stderr, "Error: -o option requires an argument.\n");
+                return 1;
+            }
+        } else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
+            print_help();
+        } else {
+            fprintf(stderr, "Error: unknown selection. %s\n", argv[i]);
+            return 1;
         }
     }
     return 0;

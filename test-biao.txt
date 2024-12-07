@@ -1,0 +1,31 @@
+~~~~~~~~~~
+
++---------+---------------------+---------------------------
+| Time    | Event               | Ready Queue                             
++---------+---------------------+---------------------------
+| 0       | Idle                | []
+| 1       | Started P4          | [P4]
+| 1       | Completed P4        | []
++---------+---------------------+---------------------------
+Simulation complete.
+
+~~~~~~~~~~
+
+Metrics for P4: Turnaround= 0, Waiting= 0, Response= 0
+
+Metrics Summary:
+Average Waiting Time: 0.00
+Average Turnaround Time: 0.00
+Average Response Time: 0.00
+Throughput: 1.00 processes per time unit
+CPU Utilization: 0.00%
+
+~~~~~~~~~~
+
+Gantt Chart:
+--------------------------------------------
+Time: 0   1   
+P4 |     ### 
+--------------------------------------------
+
+~~~~~~~~~~
