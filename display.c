@@ -1,3 +1,15 @@
+/*---------- ID HEADER -------------------------------------
+/  Author(s):   Andrew Boisvert, Kyle Scidmore
+/  Email(s):    abois526@mtroyal.ca, kscid125@mtroyal.ca 
+/  File Name:   display.c
+/
+/  File Description:
+/    This file implements functions for displaying process
+/    scheduling metrics and charts. These functions are used
+/    to visualize scheduling information, including Gantt charts
+/    and related metrics.
+/
+/---------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,14 +41,6 @@
 /  
 /  Assumptions, Limitations, Known Bugs:
 /    -
-/  
-/  Notes:
-/    - Metric formulas:
-/      * Average Waiting Time = Total waiting time / num_processes
-/      * Average Turnaround Time = Total turnaround time / num_processes
-/      * Average Response Time = Total response time / num_processes
-/      * Throughput = num_processes / total completion time
-/      * CPU Utilization (%) = (Total CPU time / total completion time) * 100
 /
 ------------------------------------------------------------------------*/
 void display_metrics(Process processes[], int num_processes, int idle_time, int current_time) {
@@ -74,7 +78,36 @@ void display_metrics(Process processes[], int num_processes, int idle_time, int 
 }
 
 
-void display_chart(Process processes[], int num_processes) {
+/*---------- FUNCTION DOCUMENTATION BLOCK ------------------------------
+/  Functions Overview:
+/    These functions generate a Gantt chart representation of process scheduling,
+/    visually displaying the start and completion times of each process in a 
+/    time-ordered format.
+/  
+/  Functions and Their Purpose:
+/    - display_chart: Generates a Gantt chart with color-coded output using ANSI 
+/      escape codes, intended for terminal display.
+/    - display_chart_file: Generates a plain-text Gantt chart without ANSI codes, 
+/      suitable for writing to output files.
+/    - display_preemptive_chart: Generates a Gantt chart for preemptive scheduling 
+/      scenarios, where specific time slices need to be tracked.
+/  
+/  Input Parameters:
+/    - Process processes[]: Array of processes to display in the chart. 
+/    - int num_processes: The number of processes in the array.
+/    - FILE *fp: A file pointer where the Gantt chart is written.
+/  
+/  Output:
+/    - display_chart and display_chart_file write formatted Gantt chart output 
+/      to the correct output based on file pointer
+/    - display_preemptive_chart outputs the Gantt chart to the console, formatted 
+/       for preemptive scheduling.
+/  
+/  Assumptions, Limitations, Known Bugs:
+/    - No known bugs at this time.
+/  
+/------------------------------------------------------------------------*/
+void display_chart(Process processes[], int num_processes, FILE *fp) {
    
     int max_time = 0;
     int current_time = 0;

@@ -359,7 +359,6 @@ void simulate_priority(Process processes[], int num_processes, Options *options)
 /  Caller Input:
 /    - Process processes[]: Array of processes to be scheduled.
 /    - int num_processes: Number of processes in the array.
-/    - int time_quantum: Time slice for Round Robin scheduling.
 /    - FILE *fp: Optional file pointer for writing simulation logs 
 /  
 /  Caller Output:
@@ -500,7 +499,6 @@ void simulate_SRTF(Process processes[], int num_processes) {
 /  Caller Input:
 /    - Process processes[]: Array of processes to be scheduled.
 /    - int num_processes: Number of processes in the array.
-/    - int time_quantum: Time slice for Round Robin scheduling.
 /    - FILE *fp: Optional file pointer for writing simulation logs 
 /  
 /  Caller Output:
