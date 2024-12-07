@@ -1,3 +1,12 @@
+/*---------- ID HEADER -------------------------------------
+/  Author(s):   Andrew Boisvert, Kyle Scidmore
+/  Email(s):    abois526@mtroyal.ca, kscid125@mtroyal.ca 
+/  File Name:   display.h
+/
+/  File Description:
+/    This header file declares the functions used for displaying
+/    process scheduling metrics and charts.
+/---------------------------------------------------------*/
 #ifndef DISPLAY_H
 #define DISPLAY_H
 

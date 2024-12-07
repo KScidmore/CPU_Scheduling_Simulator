@@ -1,3 +1,12 @@
+/*---------- ID HEADER -------------------------------------
+/  Author(s):   Andrew Boisvert, Kyle Scidmore
+/  Email(s):    abois526@mtroyal.ca, kscid125@mtroyal.ca 
+/  File Name:   globals.h
+/
+/  File Description:
+/    This header file contains macro definitions.
+/
+/---------------------------------------------------------*/
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
