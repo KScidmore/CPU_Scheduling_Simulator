@@ -153,7 +153,10 @@ void run_selected_algorithm(Process processes[], int num_processes, Options *opt
     } else if (strcmp(options->alg_selection, "sjf") == 0) {
         simulate_SJF(processes, num_processes, options);
     } else if (strcmp(options->alg_selection, "rr") == 0) {
-        simulate_round_robin(processes, num_processes, 2);
+        int time_quantum;
+        printf("Please enter a time quantum for the simulation: ");
+        time_quantum = terminal_prompt();
+        simulate_round_robin(processes, num_processes, time_quantum);
     } else if (strcmp(options->alg_selection, "priority") == 0) {
         simulate_priority(processes, num_processes, options);
     } else if (strcmp(options->alg_selection, "srtf") == 0){
