@@ -123,28 +123,25 @@ int main(int argc, char **argv) {
     
 }
 
-/*---------- FUNCTION: TODO --------------------------------
+/*---------- FUNCTION: run_cli_mode ------------------------
 /  Function Description:
-/    TODO - purpose, from the caller's perspective 
+/    Handles the simulation when the user provides command-line 
+/    arguments. Parses process data from a file, prompts the user
+/    for info as necessary, then runs the selected algorithm. 
 /  
 /  Caller Input:
-/    TODO - the purpose of each input parameter
-/    or 
-/    N/A - No input parameters
+/    int argc: number of command-line args
+/    char **argv: array of command-line args
+/    Process processes[]: array of process details 
+/    Options *options: pointer to parsed CLI input 
 /  
 /  Caller Output:
-/    TODO - the purpose of each output parameter and return val 
-/    or 
 /    N/A - No output values
 /  
 /  Assumptions, Limitations, Known Bugs:
-/    TODO - any assumptions (e.g. validity of user input), 
-/    limitations (e.g. type and range of input values), or 
-/    known bugs 
-/
-/  Notes:
-/    TODO - if applicable, notes about the function (more
-/    when writing stuff for study material)
+/    - errors are printed to stderr to avoid I/O redirection 
+/    - does not gracefully handle invalid file input formats 
+/    - this combo doesn't seem to work: ./sim < input.txt -o output.txt 
 /---------------------------------------------------------*/
 void run_cli_mode(int argc, char **argv, Process processes[], Options *options) {
 
@@ -176,7 +173,7 @@ void run_cli_mode(int argc, char **argv, Process processes[], Options *options) 
             choice = 6;
         } else{
             choice = 0;
-            printf("Invalid choice.\n");
+            fprintf(stderr, "Invalid choice.\n");
         }
     }
 
@@ -190,28 +187,24 @@ void run_cli_mode(int argc, char **argv, Process processes[], Options *options) 
 
 }
 
-/*---------- FUNCTION: TODO --------------------------------
+/*---------- FUNCTION: terminal_prompt ---------------------
 /  Function Description:
-/    TODO - purpose, from the caller's perspective 
+/    Wrapper function to assist with receiving input using 
+/    fscanf while stdin is redirected to a 
+/    This function is to assist with receiving input using fscanf 
+/    when the program is redirecting input. When input redirection 
+/    is taking place and stdin is not directed to the terminal, fscanf
+/    will not work correctly. This function works as a wrapper function,
+/    temporarily allowing the user to provide input to the terminal.
 /  
 /  Caller Input:
-/    TODO - the purpose of each input parameter
-/    or 
 /    N/A - No input parameters
 /  
 /  Caller Output:
-/    TODO - the purpose of each output parameter and return val 
-/    or 
-/    N/A - No output values
+/    int choice: the user's menu selection 
 /  
 /  Assumptions, Limitations, Known Bugs:
-/    TODO - any assumptions (e.g. validity of user input), 
-/    limitations (e.g. type and range of input values), or 
-/    known bugs 
-/
-/  Notes:
-/    TODO - if applicable, notes about the function (more
-/    when writing stuff for study material)
+/    N/A
 /---------------------------------------------------------*/
 int terminal_prompt() {
     int choice = 0;
@@ -223,28 +216,21 @@ int terminal_prompt() {
     return choice; 
 }
 
-/*---------- FUNCTION: TODO --------------------------------
+/*---------- FUNCTION: run_interactive_mode ----------------
 /  Function Description:
-/    TODO - purpose, from the caller's perspective 
+/    Handles the simulation when the user is going to interactively
+/    provide details to the program. Allows the user to manually 
+/    set the algorithm, process count, and process details. 
 /  
 /  Caller Input:
-/    TODO - the purpose of each input parameter
-/    or 
-/    N/A - No input parameters
+/    Process processes[]: array of process details 
+/    Options *options: pointer to parsed CLI input 
 /  
 /  Caller Output:
-/    TODO - the purpose of each output parameter and return val 
-/    or 
 /    N/A - No output values
 /  
 /  Assumptions, Limitations, Known Bugs:
-/    TODO - any assumptions (e.g. validity of user input), 
-/    limitations (e.g. type and range of input values), or 
-/    known bugs 
-/
-/  Notes:
-/    TODO - if applicable, notes about the function (more
-/    when writing stuff for study material)
+/    N/A - all seems to be working as intended 
 /---------------------------------------------------------*/
 void run_interactive_mode(Process processes[], Options *options) {
     int choice;
@@ -268,28 +254,20 @@ void run_interactive_mode(Process processes[], Options *options) {
     run_selected_algorithm(processes, num_processes, options);
 }
 
-/*---------- FUNCTION: TODO --------------------------------
+/*---------- FUNCTION: print_scheduling_menu ---------------
 /  Function Description:
-/    TODO - purpose, from the caller's perspective 
+/    Prints the menu that prompts the user to enter the 
+/    type of scheduling algorithm they wish to simulate. 
 /  
 /  Caller Input:
-/    TODO - the purpose of each input parameter
-/    or 
 /    N/A - No input parameters
 /  
 /  Caller Output:
-/    TODO - the purpose of each output parameter and return val 
-/    or 
 /    N/A - No output values
 /  
 /  Assumptions, Limitations, Known Bugs:
-/    TODO - any assumptions (e.g. validity of user input), 
-/    limitations (e.g. type and range of input values), or 
-/    known bugs 
-/
-/  Notes:
-/    TODO - if applicable, notes about the function (more
-/    when writing stuff for study material)
+/    - prints to stderr to ensure it prints to the terminal 
+/      when stdin is redirected 
 /---------------------------------------------------------*/
 void print_scheduling_menu() {
     fprintf(stderr, "\nSelect a Scheduling Algorithm:\n");
@@ -302,28 +280,23 @@ void print_scheduling_menu() {
     fprintf(stderr, "\nEnter your choice (1-6): ");
 }
 
-/*---------- FUNCTION: TODO --------------------------------
+/*---------- FUNCTION: run_selected_algorithm --------------
 /  Function Description:
-/    TODO - purpose, from the caller's perspective 
+/    Runs the selected scheduling algorithm on the processes 
+/    which have been provided. Prompts user for time quantum
+/    if running RR. 
 /  
 /  Caller Input:
-/    TODO - the purpose of each input parameter
-/    or 
-/    N/A - No input parameters
+/    Process processes[]: array of process details 
+/    int num_processes: the number of processes in the array 
+/    Options *options: pointer to parsed CLI input 
 /  
 /  Caller Output:
-/    TODO - the purpose of each output parameter and return val 
-/    or 
 /    N/A - No output values
 /  
 /  Assumptions, Limitations, Known Bugs:
-/    TODO - any assumptions (e.g. validity of user input), 
-/    limitations (e.g. type and range of input values), or 
-/    known bugs 
-/
-/  Notes:
-/    TODO - if applicable, notes about the function (more
-/    when writing stuff for study material)
+/    - assumes processes[] contains valid data 
+/    - assumes that a valid algorithm selection has taken place 
 /---------------------------------------------------------*/
 void run_selected_algorithm(Process processes[], int num_processes, Options *options) {
     if (strcmp(options->alg_selection, "FCFS") == 0) {
@@ -346,28 +319,21 @@ void run_selected_algorithm(Process processes[], int num_processes, Options *opt
     }
 }
 
-/*---------- FUNCTION: TODO --------------------------------
+/*---------- FUNCTION: process_input -----------------------
 /  Function Description:
-/    TODO - purpose, from the caller's perspective 
+/    Interactively collects the number of processes and the details
+/    for each from the user. 
 /  
 /  Caller Input:
-/    TODO - the purpose of each input parameter
-/    or 
-/    N/A - No input parameters
+/    Process processes[]: array of process details 
+/    int choice: the scheduling algorithm the user has selected
 /  
 /  Caller Output:
-/    TODO - the purpose of each output parameter and return val 
-/    or 
-/    N/A - No output values
+/    int num: the number of processes 
 /  
 /  Assumptions, Limitations, Known Bugs:
-/    TODO - any assumptions (e.g. validity of user input), 
-/    limitations (e.g. type and range of input values), or 
-/    known bugs 
-/
-/  Notes:
-/    TODO - if applicable, notes about the function (more
-/    when writing stuff for study material)
+/    - prints to stderr to ensure it prints to the terminal 
+/      when stdin is redirected 
 /---------------------------------------------------------*/
 int process_input(Process processes[], int choice) {
     fprintf(stderr, "%d", choice);
@@ -430,28 +396,25 @@ int process_input(Process processes[], int choice) {
     return num;
 }
 
-/*---------- FUNCTION: TODO --------------------------------
+/*---------- FUNCTION: process_file_input ------------------
 /  Function Description:
-/    TODO - purpose, from the caller's perspective 
+/    Reads process details from a file when specified by CLI args.
+/    Depending on the algorithm, reads a differently formatted file
+/    to ensure all necessary attributes are captured. 
 /  
 /  Caller Input:
-/    TODO - the purpose of each input parameter
-/    or 
-/    N/A - No input parameters
+/    Process processes[]: array of process details 
+/    Options *options: pointer to parsed CLI input 
+/    int choice: the scheduling algorithm the user has selected
 /  
 /  Caller Output:
-/    TODO - the purpose of each output parameter and return val 
-/    or 
-/    N/A - No output values
+/    int i: the number of processes in the file 
 /  
 /  Assumptions, Limitations, Known Bugs:
-/    TODO - any assumptions (e.g. validity of user input), 
-/    limitations (e.g. type and range of input values), or 
-/    known bugs 
-/
-/  Notes:
-/    TODO - if applicable, notes about the function (more
-/    when writing stuff for study material)
+/    - assumes that the file format matches what is expected, errors 
+/      might cause improper or incomplete population 
+/    - prints to stderr to ensure it prints to the terminal 
+/      when stdin is redirected 
 /---------------------------------------------------------*/
 int process_file_input(Process processes[], Options *options, int choice) {
 
@@ -511,28 +474,19 @@ int process_file_input(Process processes[], Options *options, int choice) {
 
 }
 
-/*---------- FUNCTION: TODO --------------------------------
+/*---------- FUNCTION: init_options ------------------------
 /  Function Description:
-/    TODO - purpose, from the caller's perspective 
+/    Initializes each of the members of the options struct 
+/    as an empty string. 
 /  
 /  Caller Input:
-/    TODO - the purpose of each input parameter
-/    or 
-/    N/A - No input parameters
+/    Options *options: pointer to options struct 
 /  
 /  Caller Output:
-/    TODO - the purpose of each output parameter and return val 
-/    or 
 /    N/A - No output values
 /  
 /  Assumptions, Limitations, Known Bugs:
-/    TODO - any assumptions (e.g. validity of user input), 
-/    limitations (e.g. type and range of input values), or 
-/    known bugs 
-/
-/  Notes:
-/    TODO - if applicable, notes about the function (more
-/    when writing stuff for study material)
+/    N/A
 /---------------------------------------------------------*/
 void init_options(Options *options) {
     strcpy(options->alg_selection, "");
@@ -540,28 +494,25 @@ void init_options(Options *options) {
     strcpy(options->output_file, "");
 }
 
-/*---------- FUNCTION: TODO --------------------------------
+/*---------- FUNCTION: parse_cli_args ----------------------
 /  Function Description:
-/    TODO - purpose, from the caller's perspective 
+/    Parses command-line arguments and populates an options struct 
+/    with the selected info. 
 /  
 /  Caller Input:
-/    TODO - the purpose of each input parameter
-/    or 
-/    N/A - No input parameters
+/    int argc: number of command-line args
+/    char **argv: array of command-line args
+/    Options *options: pointer to parsed CLI input 
 /  
 /  Caller Output:
-/    TODO - the purpose of each output parameter and return val 
-/    or 
-/    N/A - No output values
+/    0 on success, 1 on failure 
 /  
 /  Assumptions, Limitations, Known Bugs:
-/    TODO - any assumptions (e.g. validity of user input), 
-/    limitations (e.g. type and range of input values), or 
-/    known bugs 
-/
-/  Notes:
-/    TODO - if applicable, notes about the function (more
-/    when writing stuff for study material)
+/    - validates algorithm names by transforming to uppercase 
+/    - incorrect values will provide error messages and you will
+/      have to rerun the program to correct them 
+/    - prints to stderr to ensure it prints to the terminal 
+/      when stdin is redirected 
 /---------------------------------------------------------*/
 int parse_cli_args(int argc, char **argv, Options *options) {
     for (int i = 1; i < argc; i++) {
@@ -597,73 +548,59 @@ int parse_cli_args(int argc, char **argv, Options *options) {
     return 0;
 }
 
-/*---------- FUNCTION: TODO --------------------------------
+/*---------- FUNCTION: print_help --------------------------
 /  Function Description:
-/    TODO - purpose, from the caller's perspective 
+/    Prints the details of the program for the user, describing 
+/    the basics of how to use the program and the arguments the 
+/    user can pass with option flags. 
 /  
 /  Caller Input:
-/    TODO - the purpose of each input parameter
-/    or 
 /    N/A - No input parameters
 /  
 /  Caller Output:
-/    TODO - the purpose of each output parameter and return val 
-/    or 
 /    N/A - No output values
 /  
 /  Assumptions, Limitations, Known Bugs:
-/    TODO - any assumptions (e.g. validity of user input), 
-/    limitations (e.g. type and range of input values), or 
-/    known bugs 
-/
-/  Notes:
-/    TODO - if applicable, notes about the function (more
-/    when writing stuff for study material)
+/    - prints to stderr to ensure it prints to the terminal 
+/      when stdin is redirected 
 /---------------------------------------------------------*/
 void print_help() {
-    printf("NAME\n\tsim - simulate process scheduling algorithms\n\n");
-    printf("SYNOPSIS\n\t./sim [-a algorithm_type] [-i file_name] [-o file_name] [-h | --help]\n\n");
-    printf("DESCRIPTION\n");
-    printf("\tSimulates various process scheduling algorithms. The user may "
+    fprintf(stderr, "NAME\n\tsim - simulate process scheduling algorithms\n\n");
+    fprintf(stderr, "SYNOPSIS\n\t./sim [-a algorithm_type] [-i file_name] [-o file_name] [-h | --help]\n\n");
+    fprintf(stderr, "DESCRIPTION\n");
+    fprintf(stderr, "\tSimulates various process scheduling algorithms. The user may "
            "provide input data\n\tthrough stdin or by redirecting data from an input file. "
            "Results may be provided\n\tto stdout or by redirecting data to an output file.\n\n");
-    printf("OPTIONS\n");
-    printf("\tThe following options are available:\n\n");
-    printf("\t-a algorithm_type\n");
-    printf("\t\tSpecify the algorithm type:\n\n");
-    printf("\t\tFCFS\t\tFirst Come First Serve\n");
-    printf("\t\tSJF\t\tShortest Job First\n");
-    printf("\t\tSRTF\t\tShortest Remaining Time First\n");
-    printf("\t\tRR\t\tRound Robin\n");
-    printf("\t\tPRIORITY\tPriority Scheduling\n");
-    printf("\t\tPP\t\tPreemptive Priority\n\n");
-    printf("\t-i file_name\n\t\tSpecify the full path of an input file.\n\n");
-    printf("\t-o file_name\n\t\tSpecify the full path of an output file.\n\n");
-    printf("\t-h, --help\n\t\tPrint detailed help info about the program.\n\n");
+    fprintf(stderr, "OPTIONS\n");
+    fprintf(stderr, "\tThe following options are available:\n\n");
+    fprintf(stderr, "\t-a algorithm_type\n");
+    fprintf(stderr, "\t\tSpecify the algorithm type:\n\n");
+    fprintf(stderr, "\t\tFCFS\t\tFirst Come First Serve\n");
+    fprintf(stderr, "\t\tSJF\t\tShortest Job First\n");
+    fprintf(stderr, "\t\tSRTF\t\tShortest Remaining Time First\n");
+    fprintf(stderr, "\t\tRR\t\tRound Robin\n");
+    fprintf(stderr, "\t\tPRIORITY\tPriority Scheduling\n");
+    fprintf(stderr, "\t\tPP\t\tPreemptive Priority\n\n");
+    fprintf(stderr, "\t-i file_name\n\t\tSpecify the full path of an input file.\n\n");
+    fprintf(stderr, "\t-o file_name\n\t\tSpecify the full path of an output file.\n\n");
+    fprintf(stderr, "\t-h, --help\n\t\tPrint detailed help info about the program.\n\n");
 }
 
-/*---------- FUNCTION: TODO --------------------------------
+/*---------- FUNCTION: is_unique_id ------------------------
 /  Function Description:
-/    TODO - purpose, from the caller's perspective 
+/    Checks whether a given process ID is unique amongst the 
+/    other array entries. 
 /  
 /  Caller Input:
-/    TODO - the purpose of each input parameter
-/    or 
-/    N/A - No input parameters
+/    Process processes[]: array of process details 
+/    int count: number of processes in the array 
+/    char *id: the pid that needs to be validated as unique 
 /  
 /  Caller Output:
-/    TODO - the purpose of each output parameter and return val 
-/    or 
-/    N/A - No output values
+/    0 on success, 1 on failure 
 /  
 /  Assumptions, Limitations, Known Bugs:
-/    TODO - any assumptions (e.g. validity of user input), 
-/    limitations (e.g. type and range of input values), or 
-/    known bugs 
-/
-/  Notes:
-/    TODO - if applicable, notes about the function (more
-/    when writing stuff for study material)
+/    - assumes the array contains valid data 
 /---------------------------------------------------------*/
 int is_unique_id(Process processes[], int count, char *id) {
     for (int i = 0; i < count; i++) {
@@ -674,28 +611,18 @@ int is_unique_id(Process processes[], int count, char *id) {
     return 1;
 }
 
-/*---------- FUNCTION: TODO --------------------------------
+/*---------- FUNCTION: str_to_upper ------------------------
 /  Function Description:
-/    TODO - purpose, from the caller's perspective 
+/    Converts the characters in a given string to uppercase.
 /  
 /  Caller Input:
-/    TODO - the purpose of each input parameter
-/    or 
-/    N/A - No input parameters
+/    char *str: the string to be made uppercase
 /  
 /  Caller Output:
-/    TODO - the purpose of each output parameter and return val 
-/    or 
 /    N/A - No output values
 /  
 /  Assumptions, Limitations, Known Bugs:
-/    TODO - any assumptions (e.g. validity of user input), 
-/    limitations (e.g. type and range of input values), or 
-/    known bugs 
-/
-/  Notes:
-/    TODO - if applicable, notes about the function (more
-/    when writing stuff for study material)
+/    N/A - simple, tested, works as intended 
 /---------------------------------------------------------*/
 void str_to_upper(char *str) {
     while (*str != '\0') {
