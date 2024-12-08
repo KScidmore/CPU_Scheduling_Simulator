@@ -93,9 +93,6 @@ int main(int argc, char **argv) {
     init_options(&options);
     parse_cli_args(argc, argv, &options);
 
-    FILE *og_stdin = stdin;
-    FILE *og_stdout = stdout;
-
     if (options.input_file[0] != '\0') {
         if (freopen(options.input_file, "r", stdin) == NULL) {
             fprintf(stderr, "Error: input file did not open.\n");
@@ -115,9 +112,6 @@ int main(int argc, char **argv) {
     } else {
         run_interactive_mode(processes, &options);
     }
-
-    if (stdin != og_stdin) stdin = og_stdin;
-    if (stdout != og_stdout) stdout = og_stdout;
 
     return 0;
     
@@ -335,7 +329,6 @@ void run_selected_algorithm(Process processes[], int num_processes, Options *opt
 /      when stdin is redirected 
 /---------------------------------------------------------*/
 int process_input(Process processes[], int choice) {
-    fprintf(stderr, "%d", choice);
     int num;
     fprintf(stderr, "\nEnter the number of processes (max %d): ", MAX_PROCESSES);
     scanf("%d", &num);
@@ -351,13 +344,13 @@ int process_input(Process processes[], int choice) {
 
         fprintf(stderr, "\nEnter Process Details %d\n", i + 1);
 
-        // Ensure the ID is unique
+        
         while (!unique) {
             fprintf(stderr, "Process ID: ");
             scanf("%s", temp_id);
 
             if (is_unique_id(processes, i, temp_id)) {
-                unique = 1; // ID is unique
+                unique = 1;
                 strcpy(processes[i].id, temp_id);
             } else {
                 fprintf(stderr, "ID already taken. Please enter a unique ID.\n");

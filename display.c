@@ -284,18 +284,18 @@ void display_preemptive_chart(Process processes[], int num_processes) {
         }
     }
 
-    printf("\nGantt Chart:\n");
-    printf(ANSI_BOLD ANSI_BLUE "--------------------------------------------" ANSI_RESET "\n");
+    fprintf(stdout, "\nGantt Chart:\n");
+    fprintf(stdout, ANSI_BOLD ANSI_BLUE "--------------------------------------------" ANSI_RESET "\n");
 
     
     for (int start = 0; start <= max_time; start += MAX_WIDTH) {
         int end = (start + MAX_WIDTH - 1 < max_time) ? start + MAX_WIDTH - 1 : max_time;
 
-        printf(ANSI_BOLD ANSI_BLUE "Time: " ANSI_RESET);
+        fprintf(stdout, ANSI_BOLD ANSI_BLUE "Time: " ANSI_RESET);
         for (int t = start; t <= end; t++) {
-            printf(ANSI_BOLD ANSI_BLUE "%-4d" ANSI_RESET, t);  
+            fprintf(stdout, ANSI_BOLD ANSI_BLUE "%-4d" ANSI_RESET, t);  
         }
-        printf("\n");
+        fprintf(stdout, "\n");
 
         
         for (int i = 0; i < num_processes; i++) {
@@ -307,26 +307,74 @@ void display_preemptive_chart(Process processes[], int num_processes) {
                 case 3: color = ANSI_BLUE; break;
                 case 4: color = ANSI_MAGENTA; break;
             }
-            printf("%sP%-2s| " ANSI_RESET, color, processes[i].id);  
+            fprintf(stdout, "%sP%-2s| " ANSI_RESET, color, processes[i].id);  
 
             
             for (int t = start; t <= end; t++) {
                 if (processes[i].running_time[t] == 1) {  
-                    printf("%s### " ANSI_RESET, color); 
+                    fprintf(stdout, "%s### " ANSI_RESET, color); 
                 } else {
                     if(!flag){
 
                     }
 
-                    printf("    ");  
+                    fprintf(stdout, "    ");  
                 }
                 current_time++;
             }
-            printf("\n");
+            fprintf(stdout, "\n");
         }
 
-        printf(ANSI_BOLD ANSI_BLUE "--------------------------------------------" ANSI_RESET "\n");
+        fprintf(stdout, ANSI_BOLD ANSI_BLUE "--------------------------------------------" ANSI_RESET "\n");
     }
 }
 
 
+void display_preemptive_chart_file(Process processes[], int num_processes) {
+    int max_time = 0;
+    int current_time = 0;
+    int flag = 0;
+
+    
+    for (int i = 0; i < num_processes; i++) {
+        if (processes[i].completion_time > max_time) {
+            max_time = processes[i].completion_time;
+        }
+    }
+
+    fprintf(stdout, "\nGantt Chart:\n");
+    fprintf(stdout, "--------------------------------------------\n");
+
+    
+    for (int start = 0; start <= max_time; start += MAX_WIDTH) {
+        int end = (start + MAX_WIDTH - 1 < max_time) ? start + MAX_WIDTH - 1 : max_time;
+
+        fprintf(stdout, "Time: ");
+        for (int t = start; t <= end; t++) {
+            fprintf(stdout, "%-4d", t);  
+        }
+        fprintf(stdout, "\n");
+
+        
+        for (int i = 0; i < num_processes; i++) {
+            fprintf(stdout, "P%-2s| ", processes[i].id);  
+
+            
+            for (int t = start; t <= end; t++) {
+                if (processes[i].running_time[t] == 1) {  
+                    fprintf(stdout, "### "); 
+                } else {
+                    if(!flag){
+
+                    }
+
+                    fprintf(stdout, "    ");  
+                }
+                current_time++;
+            }
+            fprintf(stdout, "\n");
+        }
+
+        fprintf(stdout, "--------------------------------------------\n");
+    }
+}

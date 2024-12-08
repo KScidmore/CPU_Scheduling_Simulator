@@ -10,13 +10,12 @@ Emails: abois526@mtroyal.ca, kscid125@mtroyal.ca
         - doing our best to make sure we handle return values, error handling, failure points, error messaging, etc 
     
 - Test Plan: 
-    - scheduling algorithm:
-        - metric accuracy testing document created for the purpose of testing the scheduling algorithms 
-        - selected number of processes with determined attributes decided upon, then metrics are manually calculated on paper 
-        - the simulation is then run with the same test data and the reported metrics are compared against the manually calculated results 
+    - scheduling algorithms:
+        - metric accuracy testing documents have been created for the purpose of testing the scheduling algorithms 
+            - two documents called metric-testing-1.pdf and metric-testing-2.pdf 
+        - in each file, a selected number of processes with attribute values were determined, then the metrics for the performance of each algorithm were manually calculated on paper 
+        - the simulation is then run with the same test data and the reported metrics are compared against the manually calculated results to determine accuracy 
     - queue, string operations, etc: 
         - assertion testing 
         - print statement testing 
-        - not that much of this in the program honestly, needed to be more thorough about the scheudling algorithms, overall 
-
-- the test cases for the test plan are included in the document called metric-testing.pdf
+        - not that much of this in the program honestly, needed to be more thorough about the scheudling algorithms, overall

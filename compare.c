@@ -95,3 +95,15 @@ int compare_pid(const void *a, const void *b) {
 
     return pid1 - pid2;
 }
+
+int compare_remaining(const void *a, const void *b) {
+    Process *process_a = (Process *)a;
+    Process *process_b = (Process *)b;
+
+    if (process_a->remaining_time != process_b->remaining_time) {
+        return process_a->remaining_time - process_b->remaining_time;
+    }
+
+    
+    return process_a->arrival_time - process_b->arrival_time;
+}

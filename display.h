@@ -15,5 +15,6 @@ void display_metrics_table(Process processes[], int num_processes, int idle_time
 void display_chart(Process processes[], int num_processes);
 void display_chart_file(Process processes[], int num_processes);
 void display_preemptive_chart(Process processes[], int num_processes);
+void display_preemptive_chart_file(Process processes[], int num_processes);
 
 #endif

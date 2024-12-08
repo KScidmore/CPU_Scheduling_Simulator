@@ -110,12 +110,6 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options) {
                 }
             }
 
-            /*After process completes check if any processes arrived during execution or a time of completion*/
-            while (i < num_processes && processes[i].arrival_time <= current_time) {
-                enqueue(&ready_queue, processes[i]);
-                i++;
-            }
-
             fprintf(stdout, "| %-8d| Completed P%-9s| ", current_time, current_process.id);
             display_queue(&ready_queue);
             fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
@@ -126,7 +120,7 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options) {
     fprintf(stdout, "\nSimulation complete.");
     fprintf(stdout, "\n\n~~~~~~~~~~\n\n");
 
-    qsort(processes, num_processes, sizeof(Process), compare_completion);
+    qsort(processes, num_processes, sizeof(Process), compare_arrival);
 
     // display_metrics(processes, num_processes, idle_time, current_time);
     display_metrics_table(processes, num_processes, idle_time, current_time);
@@ -227,10 +221,6 @@ void simulate_SJF(Process processes[], int num_processes, Options *options) {
                 }
             }
 
-            while (i < num_processes && processes[i].arrival_time <= current_time) {
-                enqueue(&ready_queue, processes[i]);
-                i++;
-            }
 
             fprintf(stdout, "| %-8d| Completed P%-9s| ", current_time, current_process.id);
             display_queue(&ready_queue);
@@ -241,7 +231,7 @@ void simulate_SJF(Process processes[], int num_processes, Options *options) {
     fprintf(stdout, "\nSimulation complete.");
     fprintf(stdout, "\n\n~~~~~~~~~~\n\n");
 
-    qsort(processes, num_processes, sizeof(Process), compare_completion);
+    qsort(processes, num_processes, sizeof(Process), compare_arrival);
 
     display_metrics_table(processes, num_processes, idle_time, current_time);
     fprintf(stdout, "\n~~~~~~~~~~\n");
@@ -338,11 +328,6 @@ void simulate_priority(Process processes[], int num_processes, Options *options)
                 }
             }
 
-            while (i < num_processes && processes[i].arrival_time <= current_time) {
-                enqueue(&ready_queue, processes[i]);
-                i++;
-            }
-
             fprintf(stdout, "| %-8d| Completed P%-9s| ", current_time, current_process.id);
             display_queue(&ready_queue);
             fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
@@ -352,7 +337,7 @@ void simulate_priority(Process processes[], int num_processes, Options *options)
     fprintf(stdout, "\nSimulation complete.");
     fprintf(stdout, "\n\n~~~~~~~~~~\n\n");
 
-    qsort(processes, num_processes, sizeof(Process), compare_completion);
+    qsort(processes, num_processes, sizeof(Process), compare_arrival);
     
     // display_metrics(processes, num_processes, idle_time, current_time);
     display_metrics_table(processes, num_processes, idle_time, current_time);
@@ -430,7 +415,7 @@ void simulate_SRTF(Process processes[], int num_processes) {
             idled = 1;
         } else {
             
-            sort_queue(&ready_queue, compare_burst);
+            sort_queue(&ready_queue, compare_remaining);
 
             Process *current_process = &ready_queue.data[ready_queue.front];
 
@@ -490,17 +475,13 @@ void simulate_SRTF(Process processes[], int num_processes) {
 
             idled = 0;
 
-            while (i < num_processes && processes[i].arrival_time <= current_time) {
-                enqueue(&ready_queue, processes[i]);
-                i++;
-            }
         }
     }
 
     fprintf(stdout, "\nSimulation complete.");
     fprintf(stdout, "\n\n~~~~~~~~~~\n\n");
 
-    qsort(processes, num_processes, sizeof(Process), compare_completion);
+    qsort(processes, num_processes, sizeof(Process), compare_arrival);
 
     // display_metrics(processes, num_processes, idle_time, current_time);
     display_metrics_table(processes, num_processes, idle_time, current_time);
@@ -508,8 +489,8 @@ void simulate_SRTF(Process processes[], int num_processes) {
 
     //if stdout is going to tty, print asci colours, else don't
     isatty(fileno(stdout)) ?
-    display_chart(processes, num_processes) :
-    display_chart_file(processes, num_processes);
+    display_preemptive_chart(processes, num_processes) :
+    display_preemptive_chart_file(processes, num_processes);
     fprintf(stdout, "\n~~~~~~~~~~\n");
 }
 
@@ -643,17 +624,13 @@ void simulate_preemptive_priority(Process processes[], int num_processes) {
 
             Process *last_process = &ready_queue.data[ready_queue.front];
 
-            while (i < num_processes && processes[i].arrival_time <= current_time) {
-                enqueue(&ready_queue, processes[i]);
-                i++;
-            }
         }
     }
 
     fprintf(stdout, "\nSimulation complete.");
     fprintf(stdout, "\n\n~~~~~~~~~~\n\n");
 
-    qsort(processes, num_processes, sizeof(Process), compare_completion);
+    qsort(processes, num_processes, sizeof(Process), compare_arrival);
 
     // display_metrics(processes, num_processes, idle_time, current_time);
     display_metrics_table(processes, num_processes, idle_time, current_time);
@@ -661,8 +638,8 @@ void simulate_preemptive_priority(Process processes[], int num_processes) {
 
     //if stdout is going to tty, print asci colours, else don't
     isatty(fileno(stdout)) ?
-    display_chart(processes, num_processes) :
-    display_chart_file(processes, num_processes);
+    display_preemptive_chart(processes, num_processes) :
+    display_preemptive_chart_file(processes, num_processes);
     fprintf(stdout, "\n~~~~~~~~~~\n");
 }
 
@@ -813,7 +790,7 @@ void simulate_round_robin(Process processes[], int num_processes, int time_quant
 
     //if stdout is going to tty, print asci colours, else don't
     isatty(fileno(stdout)) ?
-    display_chart(processes, num_processes) :
-    display_chart_file(processes, num_processes);
+    display_preemptive_chart(processes, num_processes) :
+    display_preemptive_chart_file(processes, num_processes);
     fprintf(stdout, "\n~~~~~~~~~~\n");
 }
