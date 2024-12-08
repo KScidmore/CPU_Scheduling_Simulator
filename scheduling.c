@@ -394,7 +394,7 @@ void simulate_SRTF(Process processes[], int num_processes) {
     qsort(processes, num_processes, sizeof(Process), compare_arrival);
 
     fprintf(stdout, "~~~~~~~~~~\n\n");
-    fprintf(stdout, "\nRunning Simulation for FCFS (First Come First Served)\n\n");
+    fprintf(stdout, "\nRunning Simulation for SRTF (Shortest Remaining Time First)\n\n");
     fprintf(stdout, "+---------+---------------------+---------------------------\n");
     fprintf(stdout, "| %-8s| %-20s| %-40s", "Time", "Event", "Ready Queue");
     fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
@@ -544,7 +544,7 @@ void simulate_preemptive_priority(Process processes[], int num_processes) {
     qsort(processes, num_processes, sizeof(Process), compare_arrival);
 
     fprintf(stdout, "~~~~~~~~~~\n\n");
-    fprintf(stdout, "\nRunning Simulation for FCFS (First Come First Served)\n\n");
+    fprintf(stdout, "\nRunning Simulation for PP (Preemptive Priority)\n\n");
     fprintf(stdout, "+---------+---------------------+---------------------------\n");
     fprintf(stdout, "| %-8s| %-20s| %-40s", "Time", "Event", "Ready Queue");
     fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
@@ -697,7 +697,7 @@ void simulate_round_robin(Process processes[], int num_processes, int time_quant
     qsort(processes, num_processes, sizeof(Process), compare_arrival); 
 
     fprintf(stdout, "~~~~~~~~~~\n\n");
-    fprintf(stdout, "\nRunning Simulation for FCFS (First Come First Served)\n\n");
+    fprintf(stdout, "\nRunning Simulation for RR (Round Robin)\n\n");
     fprintf(stdout, "+---------+---------------------+---------------------------\n");
     fprintf(stdout, "| %-8s| %-20s| %-40s", "Time", "Event", "Ready Queue");
     fprintf(stdout, "\n+---------+---------------------+---------------------------\n");
