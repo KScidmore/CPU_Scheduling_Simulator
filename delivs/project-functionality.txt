@@ -1,0 +1,150 @@
+File:   Project Functionality 
+Names:  Andrew Boisvert, Kyle Scidmore 
+Emails: abois526@mtroyal.ca, kscid125@mtroyal.ca 
+==========
+
+- Sections:
+    - Overview 
+    - Core Functionality
+        - Simulation of Scheduling Algorithms 
+        - Visualization of Processing and Metrics
+        - Command-Line Argument Handling 
+    - Optional Features 
+    - Addressing Feedback from Concept Memo 
+
+
+Overview
+==========
+Our project is a Command-Line Interface (CLI) program designed to simulate various process scheduling algorithms for the sake of comparing their metrics, potential use cases, and individual benefits and drawbacks in various scenarios. User tasks may be simulated as a series of processes with varying attributes. By simulating these processes being executed by the various algorithms, it allows the user to analyze how different methods of scheduling provide varying results. 
+
+The execution of the scheduling algorithm and the resulting metrics are then visualized for the user after execution. The program outputs a table is displayed that lists the sequence that the processes were executed in and the state of the ready queue, a table of per-process metrics and overall execution metrics, and a Gantt chart. 
+
+
+Core Functionality 
+==========
+Simulation of Scheduling Algorithms 
+----------
+- The following scheduling algorithms are simulated:
+    1. First Come First Serve (FCFS)
+    2. Shortest Job First (SJF) 
+    3. Shortest Remaining Time First (SRTF)
+    4. Round Robin (RR)
+    5. Priority Scheduling (PRIORITY)
+    6. Premptive Priority (PP)
+
+- Implementation details: 
+    - process details may be provided by interactive input or by input redirection 
+    - all processes allow you to enter a PID, arrival time, and burst time; however, priority and preemptive priority also request a priority level 
+    - all processes use the same struct, unused attributes populated with NULL values 
+
+Visualization of Processing and Metrics 
+----------
+The execution of the scheduling algorithm and the resulting metrics are visualized for the user after execution. 
+
+1. Firstly, a table is displayed which illustrates the sequence that the processes were executed in by listing the current time, current process and activity, and current state of the ready queue. 
+E.G. 
++---------+---------------------+---------------------------
+| Time    | Event               | Ready Queue                             
++---------+---------------------+---------------------------
+| 0       | Idle                | []
++---------+---------------------+---------------------------
+| 1       | Started P4          | [P4]
++---------+---------------------+---------------------------
+
+2. Metrics are then displayed in a table and listed for the user, showing the CPU Utilization, Throughput, Average Waiting Time, Average Turnaround Time, Average Resonse Time, and for each process, the individual Turnaround, Waiting, and Response Time. 
+
+Table of Metrics Values:
++-------+-------+-------+-------+
+|  PID  | Turn. | Wait. | Resp. |
++-------+-------+-------+-------+
+|   P1  |    4  |    1  |    1  |
++-------+-------+-------+-------+
+|   P2  |    7  |    3  |    3  |
++-------+-------+-------+-------+
+|   P3  |   11  |    6  |    6  |
++-------+-------+-------+-------+
+|   P4  |    2  |    0  |    0  |
++-------+-------+-------+-------+
+
+Metrics Summary:
+Average Waiting Time:
+        2.50
+Average Turnaround Time:
+        6.00
+Average Response Time:
+        2.50
+Throughput:
+        0.27 processes per time unit
+CPU Utilization:
+        93.33%
+
+3. Lastly, a Gantt chart is printed, showing the durations that each process was executing. 
+
+Gantt Chart:
+--------------------------------------------
+Time: 0   1   2   3   4   5   6   7   8   9   
+P1 |             ### ### ### ###             
+P2 |                         ### ### ### ### 
+P3 |                                         
+P4 |     ### ### ###                         
+--------------------------------------------
+Time: 10  11  12  13  14  15  
+P1 |                         
+P2 | ###                     
+P3 | ### ### ### ### ### ### 
+P4 |                         
+--------------------------------------------
+
+
+Command-Line Argument Handling 
+----------
+The program supports the following arguments:
+    -a algorithm_type
+        Specify the algorithm type:
+            FCFS - First Come First Serve
+            SJF - Shortest Job First
+            SRTF - Shortest Remaining Time First
+            RR - Round Robin
+            PRIORITY - Priority Scheduling
+            PP - Preemptive Priority
+    -i file_name
+        Specify the full path of an input file.
+    -o file_name
+        Specify the full path of an output file.
+    -h, --help
+        Print detailed help info about the program.
+
+Here is a synopsis of the syntax:
+    ./sim [-a algorithm_type] [-i file_name] [-o file_name] [-h | --help]
+
+- Details: 
+    - must handle variety of combinations 
+    - must handle bash I/O redirection being called 
+
+
+Optional Features 
+==========
+If time permits, we have brainstormed some additional features which might be implemented:
+
+1. Enhanced Gantt Chart Visualization: 
+    - consider other ways that Gantt charts could be visualized 
+    - instead of printing using ASCII art, may be able to collect metrics, provide those metrics to a more detailed visualization program, and have an actual raster/vector image produced 
+
+2. Interactive Mode: 
+    - Allow users to manually modify the ready queue to add, remove, or modify processes while the simulation is executing.
+    - Program runs so fast that we would have to simulate it having slowed down. Would have to brainstorm ideas of doing this, but it definitely seems possible. 
+
+3. Simulate Alternating between CPU and I/O bursts 
+    - this would largely affect how things would be approached 
+    - would be interesting to see how this affects things 
+    - could keep original implementation and expand new implementation out, allowing users to simulate either or 
+
+
+Addressing Feedback from Concept Memo
+==========
+- Single CPU bursts are being simulated, so we will not be simulating processes coming and going from the ready queue and alternating between CPU and I/O bursts. 
+- Specified a precise list of performance metrics under the Core Functionality section 
+- Multithreading wouldn't buy us anything here, not sure what we were thinking by including that in the concept memo. You were correct that the user just chooses to run each algorithm seperately and individually. 
+- The user is allowed to adjust the time quantum for RR. The user is not allowed to adjust the alpha for SJF.
+- We did in fact limit ourselves to FCFS, SJF, SRTF, PS, P-PS, and RR. 
+- Took your feedback on creating command-line driven tool that you can specify arguments for. Implemented that, though added an interactive menu feature so you can still run it from the terminal if you wish to. 

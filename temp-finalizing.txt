@@ -1,0 +1,57 @@
+Project 2 Submission TODO
+==========
+
+TODO
+----------
+[ ] complete all program documentation 
+    [X] ansi_esc_seqs.h 
+    [X] circular_queue.c 
+    [X] circular_queue.h 
+    [X] compare.c
+    [X] compare.h
+    [X] display.c
+    [X] display.h 
+    [X] globals.h 
+    [X] makefile 
+    [X] options.h 
+    [X] process.h 
+    [X] scheduling.c
+    [X] scheduling.h 
+    [ ] sim.c
+    [X] sim.h 
+[ ] 
+
+
+Complete
+----------
+[X] complete the quality assurance docs, including test plan 
+[X] complete the project functionality document  
+[X] complete the project governance and management document 
+[X] fix sim.c so -a input isn't case-dependent 
+[X] fix the -h/--help flag to print accurate details 
+[X] review the project specs and note anything you need to implement/change before submission
+[X] fix sim.c to allow time quantum to be entered 
+
+
+---
+
+
+- deliverables:
+    - project functionality document: 
+        - must contain detailed description of the functionality 
+            - includes description of the core system (excluding nice to have features)
+            - also includes list of any optional features if time permits 
+        - must address feedback provided by the instructor when the og concept memo was approved 
+    - documents related to quality assurance, including test plan 
+    - project governance and management document 
+        - group policies 
+        - code and documentation standards 
+        - development timeline 
+        - plan for division of labour 
+        - evidence of regular group meetings and dev activity 
+            - minutes or project logs 
+        - high-level design documents 
+        - etc 
+
+- submitting: 
+    - details in specs document 

@@ -1,5 +1,8 @@
-/*-------- FOR C LANGUAGE FILES ----------------------------------------------/*
-
+- types: 
+    - id header 
+    - function documentation block 
+    - individual function block 
+    - struct 
 
 /*---------- ID HEADER -------------------------------------
 /  Author(s):   Andrew Boisvert, Kyle Scidmore
@@ -30,7 +33,25 @@
 /        (e.g. type and range of input values) 
 /---------------------------------------------------------*/
 
+- using this for ease of documenting multiple functions that only require a bit of additional context or share a lot of similar functionalities 
+/*---------- FUNCTION DOCUMENTATION BLOCK ------------------------------
+/  Functions Overview:
+/    TODO
+/  
+/  Functions and Their Purpose:
+/    TODO
+/  
+/  Input Parameters:
+/    TODO
+/  
+/  Output:
+/    TODO
+/  
+/  Assumptions, Limitations, Known Bugs:
+/    TODO
+/------------------------------------------------------------------------*/
 
+- using this for more complicated functions or functions which are more diverse which don't share much context or similar functionality 
 /*---------- FUNCTION: TODO --------------------------------
 /  Function Description:
 /    TODO - purpose, from the caller's perspective 

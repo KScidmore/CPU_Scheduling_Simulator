@@ -11,7 +11,6 @@
 #ifndef ANSI_ESC_SEQS_H
 #define ANSI_ESC_SEQS_H
 
-/* macro definitions */
 #define ANSI_RESET      "\033[0m"
 #define ANSI_BOLD       "\033[1m"
 #define ANSI_ITALIC     "\033[3m"
@@ -23,6 +22,5 @@
 #define ANSI_MAGENTA    "\033[35m"
 #define ANSI_CYAN       "\033[36m"
 #define ANSI_WHITE      "\033[37m"
-
 
 #endif
