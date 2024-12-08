@@ -34,7 +34,6 @@
 /    - int num_processes: Total number of processes in the array.
 /    - int idle_time: Total idle time of the CPU during the simulation.
 /    - int current_time: Total time elapsed in the simulation (completion time).
-/    - FILE *fp: File pointer for writing metrics (can be stdout if no file).
 /  
 /  Caller Output:
 /    N/A - No return value. Results are written to the provided file or 
@@ -78,6 +77,28 @@ void display_metrics(Process processes[], int num_processes, int idle_time, int 
     fprintf(stdout, "CPU Utilization: %.2f%%\n", cpu_utilization);
 }
 
+
+/*---------- FUNCTION: display_metrics_table ---------------
+/  Function Description:
+/    Calculates and displays scheduling metrics for a set of processes,
+/    including average waiting time, turnaround time, response time, 
+/    CPU utilization, and throughput. Outputs detailed per-process 
+/    metrics and overall metrics to a file or standard output. Formats 
+/    the display as a table to assist with readability. 
+/  
+/  Caller Input:
+/    - Process processes[]: Array of processes with completed metrics
+/    - int num_processes: Total number of processes in the array.
+/    - int idle_time: Total idle time of the CPU during the simulation.
+/    - int current_time: Total time elapsed in the simulation (completion time).
+/  
+/  Caller Output:
+/    N/A - No return value. Results are written to the provided file or 
+/          standard output.
+/  
+/  Assumptions, Limitations, Known Bugs:
+/    -
+/---------------------------------------------------------*/
 void display_metrics_table(Process processes[], int num_processes, int idle_time, int current_time) {
     int total_waiting = 0;
     int total_turnaround = 0;

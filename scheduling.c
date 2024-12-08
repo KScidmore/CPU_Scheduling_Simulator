@@ -1,5 +1,15 @@
-/*Using qsort: https://www.tutorialspoint.com/c_standard_library/c_function_qsort.htm*/
-
+/*---------- ID HEADER -------------------------------------
+/  Author(s):   Andrew Boisvert, Kyle Scidmore
+/  Email(s):    abois526@mtroyal.ca, kscid125@mtroyal.ca 
+/  File Name:   options.h
+/
+/  Program Purpose(s):
+/    This header file describes the public interface of the accompanying
+/    ".c" file, describing how this module may be used by others. 
+/
+/  Citations:
+/  - Using qsort: https://www.tutorialspoint.com/c_standard_library/c_function_qsort.htm
+/---------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,7 +35,6 @@
 /  Caller Input:
 /    - Process processes[]: Array of processes to be scheduled.
 /    - int num_processes: Number of processes in the array.
-/    - FILE *fp: Optional file pointer for writing simulation logs 
 /  
 /  Caller Output:
 /    N/A - No return value. Results are displayed directly in the console 
@@ -142,7 +151,6 @@ void simulate_FCFS(Process processes[], int num_processes, Options *options) {
 /  Caller Input:
 /    - Process processes[]: Array of processes to be scheduled.
 /    - int num_processes: Number of processes in the array.
-/    - FILE *fp: Optional file pointer for writing simulation logs 
 /  
 /  Caller Output:
 /    N/A - No return value. Results are displayed directly in the console 
@@ -257,7 +265,6 @@ void simulate_SJF(Process processes[], int num_processes, Options *options) {
 /  Caller Input:
 /    - Process processes[]: Array of processes to be scheduled.
 /    - int num_processes: Number of processes in the array.
-/    - FILE *fp: Optional file pointer for writing simulation logs 
 /  
 /  Caller Output:
 /    N/A - No return value. Results are displayed directly in the console 
@@ -370,7 +377,6 @@ void simulate_priority(Process processes[], int num_processes, Options *options)
 /  Caller Input:
 /    - Process processes[]: Array of processes to be scheduled.
 /    - int num_processes: Number of processes in the array.
-/    - FILE *fp: Optional file pointer for writing simulation logs 
 /  
 /  Caller Output:
 /    N/A - No return value. Results are displayed directly in the console 
@@ -519,7 +525,6 @@ void simulate_SRTF(Process processes[], int num_processes) {
 /  Caller Input:
 /    - Process processes[]: Array of processes to be scheduled.
 /    - int num_processes: Number of processes in the array.
-/    - FILE *fp: Optional file pointer for writing simulation logs 
 /  
 /  Caller Output:
 /    N/A - No return value. Results are displayed directly in the console 
@@ -673,7 +678,6 @@ void simulate_preemptive_priority(Process processes[], int num_processes) {
 /    - Process processes[]: Array of processes to be scheduled.
 /    - int num_processes: Number of processes in the array.
 /    - int time_quantum: Time slice for Round Robin scheduling.
-/    - FILE *fp: Optional file pointer for writing simulation logs 
 /  
 /  Caller Output:
 /    N/A - No return value. Results are displayed directly in the console 

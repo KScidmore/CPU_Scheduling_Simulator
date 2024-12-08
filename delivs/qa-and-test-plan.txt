@@ -1,0 +1,22 @@
+File:   Project Quality Assurance and Test Plan 
+Names:  Andrew Boisvert, Kyle Scidmore 
+Emails: abois526@mtroyal.ca, kscid125@mtroyal.ca 
+==========
+
+- Quality assurance practices: 
+    - code reviews and version control: 
+        - regularly meet throughout development phases to review code and integrate changes to main branch of repo 
+    - error handling and failure modes 
+        - doing our best to make sure we handle return values, error handling, failure points, error messaging, etc 
+    
+- Test Plan: 
+    - scheduling algorithm:
+        - metric accuracy testing document created for the purpose of testing the scheduling algorithms 
+        - selected number of processes with determined attributes decided upon, then metrics are manually calculated on paper 
+        - the simulation is then run with the same test data and the reported metrics are compared against the manually calculated results 
+    - queue, string operations, etc: 
+        - assertion testing 
+        - print statement testing 
+        - not that much of this in the program honestly, needed to be more thorough about the scheudling algorithms, overall 
+
+- the test cases for the test plan are included in the document called metric-testing.pdf

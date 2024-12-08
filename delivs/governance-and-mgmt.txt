@@ -1,0 +1,202 @@
+File:   Project Governance and Management
+Names:  Andrew Boisvert, Kyle Scidmore 
+Emails: abois526@mtroyal.ca, kscid125@mtroyal.ca 
+==========
+
+- Sections: 
+    - Group Policies - Governance, Management, and Labour 
+        - Governance
+        - Management and Labour
+    - Code and Documentation Standards 
+    - Development Timeline 
+
+Note: 
+While quite a few details such as our division of labour and management structure have stayed the same, as we found that the model we chose worked well for use during the first project, a considerable amount of details have changed. This document follows the same structure as the last, but has a considerable amount of revisions amongst it. 
+
+
+Group Policies - Governance, Management, and Labour 
+==========
+Governance
+----------
+- Goals and Accountability:
+    - We believe that completing the project to complete functionality is achievable 
+    - We are targeting an A grade on the project, hoping to improve upon some of the areas that we received feedback in on Project 1
+    - As we are a group of 2, each member will be responsible for an equal 
+    distribution of labour. What this division looks like is open to discussion, but members must agree on how to address the workload. 
+
+- Policy: 
+    - Meeting as a group at a minimum of weekly 
+    - Individual contributions can be managed however we each see fit 
+    - Communicate likely daily as we share classes, at minimum every 2-3 days 
+    - Work will be conducted individually and in paired programming sessions. Paired programming sessions should be targeted to more troublesome problems or things that would benefit from collaboration to best utilize our time. 
+    - If members have familial obligations over reading break, they are to 
+    prioritize time with their families, but they will be expected to spend 
+    some of their free time completing the project if we have decided to 
+    continue working on it before the reading break.
+    - Will communicate with each other about what our other coursework looks like, exams, assignments, etc so we can balance our schedules. 
+    - Group issues and conflicts will be solved through regular communication. 
+    As we have known each other for a couple of years now and regularly 
+    communicate, we know each other well enough that we should feel comfortable 
+    bringing any issues and concerns to one another. Should the need arise, 
+    these issues will be respectfully discussed and a resolution will be agreed 
+    upon. 
+    - Potential issues or conflicts will be solved by talking it out. We should feel comfortable bringing any issues and concerns to one another. Should the need arise, we can have a discussion and find a resolution. If we come to a disagreement on implementation or something that we can't resolve, we'll bring it to our professor to get feedback. 
+    - Code and documentation standards will follow a similar pattern to that 
+    of our previous classes, with some slight revisions. Any interesting 
+    ideas that we find from other coding standards will be shared with members.
+    A design guide, as well as documentation templates, will be available to 
+    members. 
+    - Code and documentation standards will be similar to before, but deviating a bit to allow for some more leniency with bracketing single-line conditionals for the sake of readability and LOC 
+
+- Team Lead: 
+    - As we have two members, no team lead will be exist. Any group decisions 
+    will be discussed, and we will be following the "two yes, one no" rule 
+    where both members must agree to any major decisions, group standards, etc. 
+
+Management and Labour
+----------
+- Planning: 
+    - Planning to meet the initial deadline, but will work into reading break 
+    if necessary, or if we wish to try to implement additional features.
+    - Tools: 
+        - VS Code w/ Remote Explorer and Live Share extensions to facilitate 
+        paired programming sessions 
+        - GitHub for version control 
+        - Discord for voice chats during group sessions 
+        - Text messaging and in-person meetings for all other communication. 
+
+- Group Decisions: 
+    - For all architectural choices beyond that specified in the project 
+    guidance documents, discussions will take place to come to a final 
+    decision. Members are permitted to make initial decisions regarding things
+     such as module organization, but they are to communicate such to the other
+      member and come to a final decision together. 
+
+- Allocation of Resources: 
+    - Division of labour will be planned to be equal, overall. Discussions will
+     take place to decide how we will split the work, considering member's 
+     strengths and weaknesses. As we are both older students, we will keep an 
+     open line of communication with each other regarding personal 
+     responsibilities and changes to our schedules so we may have discussions 
+     regarding re-division of labour if necessary, but we are expected to take
+      that into consideration going forward to ensure equal participation. 
+
+- Integration and Review: 
+    - Individuals are expected to write high-quality code which they have 
+    properly tested. They are expected to explain their code to the other 
+    member during weekly code reviews to help the other member to understand
+    their contributions, as well as to help catch bugs and errors. All code 
+    will be reviewed before moving onto further sections. 
+
+- Other Labour Tasks: 
+    - Mutual-Education:
+        - Both members will be expected to fully understand the solutions 
+        found within the project. Code reviews and explanations will help to 
+        facilitate this. 
+    - Presentation Development: 
+        - Members will keep the presentation in mind throughout the course of
+        the project, personally documenting anything relevant and sharing ideas
+         on the overall presentation with the other member. Upon completion, we
+          will begin to create and organize the presentation itself, utilizing 
+          some of the resources which we have compiled over the course of the 
+          project's completion.
+
+
+Code and Documentation Standards 
+==========
+- Indentation Style:
+    - One True Brace(like K&R but excludes single-statement code blocks)
+    e.g. 
+        while (x == y) {
+            if (true) {
+                foo();
+            } else {
+                bar();
+            }
+        }
+    - deviating from this only when it helps with readability or LOC, like a switch statement that can take up 1/3 of the space by not featuring bracketing and by shoving multiple short statements that would typically be multiple lines of code onto a single line 
+
+- variables will be named using snake case 
+    e.g. foo_bar
+
+- lines must not exceed 80 characters in length 
+
+- avoid magic numbers and create macros as needed to define constant values 
+with clear descriptions 
+    e.g. #define MAX_PIPELINE_LEN 10 
+
+- use parenthesis and include one blank space between operators for legibility (excluding cases like the -> operator)
+    e.g. (12 * 3) + 7
+
+- following this convention for organizing the files:
+    - inside .c files \
+        ID Header 
+        #include <> (pre-existing header files)
+        #include "" (user-defined header files)
+        #defines
+        Globals (if strictly necessary) 
+        Code (w/ main function first)
+    - inside .h files
+        #ID Header  
+        #ifndef [FILENAME]_H
+        #define [FILENAME]_H
+        #include <> (pre-existing header files)
+        #include "" (user-defined header files)
+        #defines 
+        Structs 
+        Function Prototypes
+        #endif 
+
+- templates: 
+    - there are some templates available in docs/ 
+    - can copy and paste header then replace TODOs out 
+    - templates for documenting ID Headers, Function Blocks, Functions, Structs
+
+- when accessing members of a struct use the arrow operator instead of 
+dereferencing 
+    i.e. access members with struct->member, not with (*struct).member 
+
+- Further Considering Decomposition of Functions:
+    - Blocks of code that exist in multiple sections should not exist, but when decomposing functions into helper subfunctions, it is worth considering readability and maintainability if those helpers only exist for a single function. That is, when working with some longer blocks of code, consider if breaking it down actually further assists with readability. Some of it will make sense to do, but some of it will just make it a bit more difficult to follow the code for the sake of saving a few dozen lines of length. 
+
+
+Development Timeline 
+==========
+- Notable Dates: 
+    - Oct. 30: submitted concept memo 
+    - Nov. 3: received approval and feedback 
+    - Dec. 6 @ 11:59pm: submission deadline 
+    - Dec. 8 @ 11:59pm: extension deadline
+
+Oct. 28 - Nov. 3 
+    - collaborated on draft of concept memo, finding something we were both happy with 
+    - submitted concept memo and waited to hear back 
+
+Nov. 4 - Nov. 10 
+    - review Marc's feedback and start further considering the project 
+    - adjusted initial plan based off of feedback, refining project scope and core functionalities 
+    - started drafting out a specification document that narrowed in on finer details 
+
+Nov. 11 - Nov. 17
+    - implemented a basic menu setup 
+    - implemented FCFS algorithm and started playing with output 
+    - held group discussions on formatting, what rest of project may look like 
+
+Nov. 18 - Nov. 24
+    - implemented SJN and SRJF algorithms
+    - started implementing command-line argument passing 
+
+Nov. 25 - Dec. 1 
+    - implemented RR 
+    - held group discussions to refine scope of command-line argument passing 
+    - created some handwritten test cases for metric results after select processes are 
+    ran through simulations for various algorithms 
+
+Dec. 2 - Dec. 6 
+    - implemented the preemptive algorithms, fixed formatting for preemptive stuff 
+    - finished testing algorithms against our handwritten test cases 
+    - finished refining command-line argument passing 
+
+Dec. 7 - Dec. 8 
+    - using to finalize project details, further review, compile and refine documentation
+    - had a final meeting to perform final code review and to review documents that would be part of the project deliverable 

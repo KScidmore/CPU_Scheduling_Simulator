@@ -29,6 +29,8 @@
 /       completion time.
 /    - compare_priority: Compares two processes based on their priority. 
 /       If priorities are equal, it compares their arrival times.
+/    - compare_pid: Compares two processes based on the integer value 
+/       of their pid string. 
 /  
 /  Input Parameters:
 /    - All comparison functions take two void* pointers, a and b, which
