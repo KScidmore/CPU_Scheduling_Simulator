@@ -154,8 +154,10 @@ void run_cli_mode(int argc, char **argv, Process processes[], Options *options) 
         switch (choice) {
             case 1: strcpy(options->alg_selection, "FCFS"); break;
             case 2: strcpy(options->alg_selection, "SJF"); break;
-            case 3: strcpy(options->alg_selection, "RR"); break;
-            case 4: strcpy(options->alg_selection, "PRIORITY"); break;
+            case 3: strcpy(options->alg_selection, "SRTF"); break;
+            case 4: strcpy(options->alg_selection, "RR"); break;
+            case 5: strcpy(options->alg_selection, "PS"); break;
+            case 6: strcpy(options->alg_selection, "PPS"); break;
             default: fprintf(stderr, "Invalid choice.\n"); break;
         } 
     } else {
@@ -167,9 +169,9 @@ void run_cli_mode(int argc, char **argv, Process processes[], Options *options) 
             choice = 3;
         } else if (strcmp(options->alg_selection, "RR") == 0) {
             choice = 4;
-        } else if (strcmp(options->alg_selection, "PRIORITY") == 0) {
+        } else if (strcmp(options->alg_selection, "PS") == 0) {
             choice = 5;
-        } else if (strcmp(options->alg_selection, "PP") == 0) {
+        } else if (strcmp(options->alg_selection, "PPS") == 0) {
             choice = 6;
         } else{
             choice = 0;
@@ -189,13 +191,10 @@ void run_cli_mode(int argc, char **argv, Process processes[], Options *options) 
 
 /*---------- FUNCTION: terminal_prompt ---------------------
 /  Function Description:
-/    Wrapper function to assist with receiving input using 
-/    fscanf while stdin is redirected to a 
-/    This function is to assist with receiving input using fscanf 
-/    when the program is redirecting input. When input redirection 
-/    is taking place and stdin is not directed to the terminal, fscanf
-/    will not work correctly. This function works as a wrapper function,
-/    temporarily allowing the user to provide input to the terminal.
+/    When input redirection is taking place and stdin is not directed
+/    to the terminal, fscanf will not work correctly. This function works 
+/    as a wrapper function, temporarily allowing the user to provide input 
+/    to the terminal.
 /  
 /  Caller Input:
 /    N/A - No input parameters
@@ -209,7 +208,7 @@ void run_cli_mode(int argc, char **argv, Process processes[], Options *options) 
 int terminal_prompt() {
     int choice = 0;
     FILE *tty = fopen("/dev/tty", "r");
-    if (stdin != tty) {
+    if (stdout != tty) {
         fscanf(tty, "%d", &choice);
     }
     fclose(tty);
@@ -244,8 +243,8 @@ void run_interactive_mode(Process processes[], Options *options) {
         case 2: strcpy(options->alg_selection, "SJF"); break;
         case 3: strcpy(options->alg_selection, "SRTF"); break;
         case 4: strcpy(options->alg_selection, "RR"); break;
-        case 5: strcpy(options->alg_selection, "PRIORITY"); break;
-        case 6: strcpy(options->alg_selection, "PP"); break;
+        case 5: strcpy(options->alg_selection, "PS"); break;
+        case 6: strcpy(options->alg_selection, "PPS"); break;
         default: break;
     }
 
@@ -275,8 +274,8 @@ void print_scheduling_menu() {
     fprintf(stderr, "2. SJF (Shortest Job First)\n");
     fprintf(stderr, "3. SRTF (Shortest Remaining Time First)\n");
     fprintf(stderr, "4. RR (Round Robin)\n");
-    fprintf(stderr, "5. Priority Scheduling\n");
-    fprintf(stderr, "6. PP (Preemptive Priority)\n");
+    fprintf(stderr, "5. PS (Priority Scheduling)\n");
+    fprintf(stderr, "6. PPS (Preemptive Priority Scheduling)\n");
     fprintf(stderr, "\nEnter your choice (1-6): ");
 }
 
@@ -305,14 +304,14 @@ void run_selected_algorithm(Process processes[], int num_processes, Options *opt
         simulate_SJF(processes, num_processes, options);
     } else if (strcmp(options->alg_selection, "RR") == 0) {
         int time_quantum;
-        printf("Please enter a time quantum for the simulation: ");
+        fprintf(stderr, "Please enter a time quantum for the simulation: ");
         time_quantum = terminal_prompt();
         simulate_round_robin(processes, num_processes, time_quantum);
-    } else if (strcmp(options->alg_selection, "PRIORITY") == 0) {
+    } else if (strcmp(options->alg_selection, "PS") == 0) {
         simulate_priority(processes, num_processes, options);
     } else if (strcmp(options->alg_selection, "SRTF") == 0){
         simulate_SRTF(processes, num_processes);
-    } else if (strcmp(options->alg_selection, "PP") == 0) {
+    } else if (strcmp(options->alg_selection, "PPS") == 0) {
         simulate_preemptive_priority(processes, num_processes);
     } else{
          printf("Invalid choice.\n");
@@ -579,8 +578,8 @@ void print_help() {
     fprintf(stderr, "\t\tSJF\t\tShortest Job First\n");
     fprintf(stderr, "\t\tSRTF\t\tShortest Remaining Time First\n");
     fprintf(stderr, "\t\tRR\t\tRound Robin\n");
-    fprintf(stderr, "\t\tPRIORITY\tPriority Scheduling\n");
-    fprintf(stderr, "\t\tPP\t\tPreemptive Priority\n\n");
+    fprintf(stderr, "\t\tPS\tPriority Scheduling\n");
+    fprintf(stderr, "\t\tPPS\t\tPreemptive Priority Scheduling\n\n");
     fprintf(stderr, "\t-i file_name\n\t\tSpecify the full path of an input file.\n\n");
     fprintf(stderr, "\t-o file_name\n\t\tSpecify the full path of an output file.\n\n");
     fprintf(stderr, "\t-h, --help\n\t\tPrint detailed help info about the program.\n\n");
